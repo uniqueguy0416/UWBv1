@@ -1,0 +1,202 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "MD building"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.5442058, 25.0175396],
+            [121.5440345, 25.0177071],
+            [121.5445082, 25.0181051],
+            [121.5446795, 25.0179376],
+            [121.5442058, 25.0175396]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Classroom"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.5445483, 25.0178275],
+            [121.544377, 25.017995],
+            [121.5445082, 25.0181051],
+            [121.5446795, 25.0179376],
+            [121.5445483, 25.0178275]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Blocked",
+        "id": "1-1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.5444944, 25.0179478],
+            [121.54447, 25.01797],
+            [121.54449705, 25.0179951],
+            [121.54452145, 25.0179729],
+            [121.5444944, 25.0179478]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Blocked",
+        "id": "1-2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.54453145, 25.0179829],
+            [121.54450705, 25.0180051],
+            [121.5445341, 25.0180302],
+            [121.5445585, 25.018008],
+            [121.54453145, 25.0179829]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Blocked",
+        "id": "2-1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.5445344, 25.0179075],
+            [121.54451, 25.01793],
+            [121.5445372, 25.01795495],
+            [121.5445616, 25.0179326],
+            [121.5445347, 25.0179075]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Blocked",
+        "id": "2-2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.5445716, 25.0179426],
+            [121.5445472, 25.01796495],
+            [121.5445744, 25.0179899],
+            [121.5445988, 25.0179677],
+            [121.5445716, 25.0179426]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Blocked",
+        "id": "3-1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.5445744, 25.0178675],
+            [121.54455, 25.01789],
+            [121.5445772, 25.01791495],
+            [121.5446016, 25.0178926],
+            [121.5445747, 25.0178675]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Blocked",
+        "id": "3-2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [121.5446116, 25.0179026],
+            [121.5445872, 25.01792495],
+            [121.5446144, 25.0179499],
+            [121.5446388, 25.0179277],
+            [121.5446116, 25.0179026]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Mapbox",
+        "description": "San Francisco, California"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5446538, 25.0179277]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Mapbox",
+        "description": "S1",
+        "use": "marker"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.54455, 25.01791]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Mapbox",
+        "description": "S2",
+        "use": "marker"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.54455, 25.01799]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Mapbox",
+        "description": "S3",
+        "use": "marker"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5444944, 25.01802]
+      }
+    }
+  ]
+}
