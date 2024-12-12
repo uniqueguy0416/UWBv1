@@ -16,6 +16,9 @@ const UserSchema = new Schema({
     type: [Number],
     required: true,
   },
+  palletID: {
+    type: String,
+  },
 });
 //creating a table within database with the defined
 const UserModel = mongoose.model("user", UserSchema);

@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const PalletSchema = new Schema({
-  ID: { type: String, required: [true, "ID field is required."] },
   type: {
     type: String,
     // required: [true, "Body field is required."],
+    // 川字形, 田字型, 九宮格式, 雙面
   },
   content: {
     type: String,
@@ -17,7 +17,7 @@ const PalletSchema = new Schema({
     required: true,
   },
   position: {
-    type: [number, number],
+    type: [],
     required: true,
   },
   final_user: {

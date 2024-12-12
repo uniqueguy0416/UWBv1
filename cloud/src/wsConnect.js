@@ -1,3 +1,4 @@
+import PalletModel from "../models/pallet.js";
 import UserModel from "../models/User.js";
 
 const sendData = (data, ws) => {
@@ -26,10 +27,22 @@ export default {
       case "findPallet": {
         break;
       }
-      case "putDown": {
+      case "addPallet": {
+        const { status, type, content, position, final_user } = payload;
+
+        try {
+          const newPallet = new PalletModel({ status, type, content, position, final_user });
+          await newPallet.save();
+          //sendStatus({ type: "success", msg: "User added successfully" }, ws);
+          console.log("save new pallet");
+          sendData({ type: "successful", payload: { msg: "Pallet added successfully" } }, ws);
+        } catch (error) {
+          //console.log({ type: "error", msg: "Failed to add user" }, ws);
+          console.log(error);
+        }
         break;
       }
-      case "Modify": {
+      case "updatePallet": {
         break;
       }
       case "checkUser": {
@@ -44,12 +57,12 @@ export default {
         break;
       }
       case "addUser": {
-        const { userID, pwd, status, last_position } = payload;
+        const { userID, pwd, status, last_position, palletID } = payload;
 
         try {
-          const newUser = new UserModel({ userID, pwd, status, last_position });
+          const newUser = new UserModel({ userID, pwd, status, last_position, palletID });
           await newUser.save();
-          //sendStatus({ type: "success", msg: "User added successfully" }, ws);
+          sendData({ type: "successful", payload: { msg: "User added successfully" } }, ws);
           console.log("hi");
         } catch (error) {
           //console.log({ type: "error", msg: "Failed to add user" }, ws);
