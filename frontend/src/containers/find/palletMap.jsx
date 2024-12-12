@@ -7,20 +7,39 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "./palletMap.css";
 import geojsonData from "./pos.json";
 import { useIoT } from "../../hooks/useIoT";
+import Button from "@mui/material/Button";
+
 export default function PalletMap(props) {
   const mapRef = useRef();
   const mapContainerRef = useRef();
-  const { tempPalletDest, setTempPalletDest, route } = useIoT();
+  const navigate = useNavigate();
+  const { tempPalletDest, setTempPalletDest, route, selected, closeEnough, setSelected, sendData, addUser } = useIoT();
+
+  const click = () => {
+    console.log("click");
+    //take the pallet
+
+    addUser();
+
+    // setSelected(true);
+  };
+  const takeAway = () => {
+    console.log("takeAway");
+
+    navigate("/home");
+  };
+  const clickPallet = () => {};
   // cross[-0.000015]
+  // setup map
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_TOKEN;
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      center: [121.54436, 25.01783],
+      center: [121.54446, 25.01793],
       zoom: 20,
-      scrollZoom: false,
-      // bearing: -130, // rotate angle
+      // scrollZoom: false,
+      bearing: -42, // rotate angle
       // maxBounds: [
       //   [121.544025, 25.017521],
       //   [121.544682, 25.01815],
@@ -133,6 +152,7 @@ export default function PalletMap(props) {
     };
   }, []);
 
+  // update route
   useEffect(() => {
     console.log("route", route);
     if (mapRef.current && mapRef.current.getSource("route")) {
@@ -146,9 +166,47 @@ export default function PalletMap(props) {
       });
     }
   }, [route]);
+
+  // not finished!!!!!!!!!!
+  useEffect(() => {
+    console.log("selected", selected);
+    mapRef.current.off("click", "points-layer", (e) => {
+      console.log(e);
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const description = e.features[0].properties.description;
+
+      // set destination
+      setTempPalletDest([coordinates[0], coordinates[1]]);
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+      // new mapboxgl.Popup().setLngLat(coordinates).setHTML(description).addTo(mapRef.current);
+    });
+  }, [selected]);
+
   return (
-    <>
-      <div id="map-container" ref={mapContainerRef} />
-    </>
+    <div id="map">
+      <>
+        <div id="map-container" ref={mapContainerRef} />
+      </>
+      <>
+        <div id="button">
+          {route.length === 0 ? (
+            // not selected a pallet
+            <Box sx={{ width: "100%", fontSize: "30px", display: "flex", alignContent: "center", justifyContent: "center" }}>請選擇一塊棧板</Box>
+          ) : !selected ? (
+            // start navigation == selected
+            <Button variant="contained" color="success" sx={{ width: "40%", fontSize: "40px" }} onClick={() => click()}>
+              開始導航
+            </Button>
+          ) : (
+            // if close enough => able to take
+            <Button disabled={!closeEnough} variant="contained" color="success" sx={{ width: "40%", fontSize: "40px" }} onClick={() => takeAway()}>
+              確認領取
+            </Button>
+          )}
+        </div>
+      </>
+    </div>
   );
 }

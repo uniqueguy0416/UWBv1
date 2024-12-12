@@ -40,18 +40,11 @@ export default function SelectType(props) {
           棧板管理系統
         </Typography>
         <Button variant="outlined" onClick={() => navigate("/find")}>
-          尋找棧板
+          空的棧板
         </Button>
         <Button variant="outlined" onClick={() => navigate("/drop")}>
-          放下棧板
+          物品
         </Button>
-        <Button variant="outlined" onClick={() => navigate("/update")}>
-          更新棧板資料
-        </Button>
-        <Button variant="outlined" onClick={() => navigate("/add")}>
-          新增棧板
-        </Button>
-        {/* </ButtonGroup> */}
       </Stack>
     </Box>
   );
