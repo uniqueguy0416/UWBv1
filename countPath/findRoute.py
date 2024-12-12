@@ -102,7 +102,8 @@ def addEdge(st, dst, data):
 
 
 def findRoute(dest=[]):
-    if dest is []:
+    print(dest, type(dest), "dest")
+    if dest == []:
         return []
 
     st = [121.5444944, 25.01802]
