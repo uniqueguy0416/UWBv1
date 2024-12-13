@@ -1,7 +1,7 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import { useNavigate } from "react-router";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./palletMap.css";
@@ -13,21 +13,19 @@ export default function PalletMap(props) {
   const mapRef = useRef();
   const mapContainerRef = useRef();
   const navigate = useNavigate();
-  const { tempPalletDest, setTempPalletDest, route, selected, closeEnough, setSelected, sendData, addUser } = useIoT();
-
+  const { takeAwayPallet, userPos, availablePallet, tempPalletDest, setTempPalletDest, route, selected, closeEnough, setSelected, sendData, addUser } = useIoT();
+  const [palletID, setPalletID] = useState("");
   const click = () => {
     console.log("click");
-    //take the pallet
 
-    addUser();
-
-    // setSelected(true);
+    setSelected(true);
   };
   const takeAway = () => {
     console.log("takeAway");
-
+    takeAwayPallet(palletID);
     navigate("/home");
   };
+
   const clickPallet = () => {};
   // cross[-0.000015]
   // setup map
@@ -55,6 +53,13 @@ export default function PalletMap(props) {
       mapRef.current.addSource("combinedSource", {
         type: "geojson",
         data: data,
+      });
+      mapRef.current.addSource("pallets", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: availablePallet,
+        },
       });
       // add a layer to use the source content
       mapRef.current.addLayer({
@@ -92,17 +97,42 @@ export default function PalletMap(props) {
           "fill-opacity": 1,
         },
       });
-      // add a point source (marker)
+
+      // User: add a point source (marker)
       mapRef.current.addLayer({
         id: "points-layer",
         type: "circle", // Or use "symbol" for icons
-        source: "combinedSource",
+        source: "pallets",
         filter: ["==", "$type", "Point"],
         paint: {
           "circle-radius": 8,
           "circle-color": "#ff0000",
         },
       });
+
+      // User: add a point source (marker)
+      mapRef.current.addSource("UserPos", {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Point",
+            coordinates: userPos,
+          },
+        },
+      });
+
+      mapRef.current.addLayer({
+        id: "UserPoint",
+        type: "circle", // Or use "symbol" for icons
+        source: "UserPos",
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "#007FFF",
+        },
+      });
+      //User end
 
       // line layer (route)
       mapRef.current.addSource("route", {
@@ -134,10 +164,9 @@ export default function PalletMap(props) {
 
     //click event on points-layer
     mapRef.current.on("click", "points-layer", (e) => {
-      console.log(e);
       const coordinates = e.features[0].geometry.coordinates.slice();
       const description = e.features[0].properties.description;
-
+      setPalletID(description);
       // set destination
       setTempPalletDest([coordinates[0], coordinates[1]]);
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -167,7 +196,7 @@ export default function PalletMap(props) {
     }
   }, [route]);
 
-  // not finished!!!!!!!!!!
+  // Todo: turn off click not finished!!!!!!!!!!
   useEffect(() => {
     console.log("selected", selected);
     mapRef.current.off("click", "points-layer", (e) => {
@@ -201,8 +230,9 @@ export default function PalletMap(props) {
             </Button>
           ) : (
             // if close enough => able to take
-            <Button disabled={!closeEnough} variant="contained" color="success" sx={{ width: "40%", fontSize: "40px" }} onClick={() => takeAway()}>
+            <Button disabled={closeEnough} variant="contained" color="success" sx={{ width: "40%", fontSize: "40px" }} onClick={() => takeAway()}>
               確認領取
+              {/* {!closeEnough} */}
             </Button>
           )}
         </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import NestedCard from "../../components/card";
 import styled from "styled-components";
 import Box from "@mui/material/Box";
@@ -10,6 +10,8 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { useIoT } from "../../hooks/useIoT";
+import CircularProgress from "@mui/material/CircularProgress";
 const Wrapper = styled.div`
   width: 70%;
   height: 100%;
@@ -25,27 +27,43 @@ const Wrapper = styled.div`
 const types = ["尋找棧板", "放下棧板", "更新棧板資料", "新增棧板"];
 
 export default function SelectType(props) {
-  //   const { login, setLogin } = useNMLab();
-  //   const navigate = useNavigate();
-  //   const selectCard = (title) => {
-  //     if (title === "註冊帳號") navigate("/register");
-  //     else if (title === "列印／掃描") navigate("/printMenu");
-  //   };
+  const { selection, findSelection, pending, setPending } = useIoT();
+  const [task, setTask] = useState("");
   const navigate = useNavigate();
+  useEffect(() => {
+    if (task == "setContent") {
+      findSelection(true);
+      console.log("setContent");
+    } else if (task == "empty") {
+      findSelection(false);
+      console.log("empty");
+    }
+  }, [task]);
+  useEffect(() => {
+    if (selection.length > 0) {
+      console.log("selection", selection);
+      setPending(false);
+      navigate("/selectContent");
+    }
+  }, [selection]);
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-      <Stack spacing={2} sx={{ width: 1 / 3, textAlign: "center" }}>
-        {/* <ButtonGroup sx={{ width: 1 / 4 }} orientation="vertical" aria-label="Vertical navigation group"> */}
-        <Typography variant="h2" component="h2">
-          棧板管理系統
-        </Typography>
-        <Button variant="outlined" onClick={() => navigate("/find")}>
-          空的棧板
-        </Button>
-        <Button variant="outlined" onClick={() => navigate("/drop")}>
-          物品
-        </Button>
-      </Stack>
+      {pending ? (
+        <CircularProgress />
+      ) : (
+        <Stack spacing={2} sx={{ width: 1 / 3, textAlign: "center" }}>
+          {/* <ButtonGroup sx={{ width: 1 / 4 }} orientation="vertical" aria-label="Vertical navigation group"> */}
+          <Typography variant="h2" component="h2">
+            棧板種類
+          </Typography>
+          <Button variant="outlined" onClick={() => setTask("empty")}>
+            空的棧板
+          </Button>
+          <Button variant="outlined" onClick={() => setTask("setContent")}>
+            物品
+          </Button>
+        </Stack>
+      )}
     </Box>
   );
 }

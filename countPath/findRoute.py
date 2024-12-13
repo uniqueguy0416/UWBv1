@@ -101,12 +101,12 @@ def addEdge(st, dst, data):
         graph.add_edge(st, dst, len)
 
 
-def findRoute(dest=[]):
+def findRoute(st=[], dest=[]):
     print(dest, type(dest), "dest")
     if dest == []:
         return []
 
-    st = [121.5444944, 25.01802]
+    # st = [121.5444944, 25.01802]
 
     global graph
     graph = Graph(10)

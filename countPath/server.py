@@ -11,7 +11,7 @@ def dest():
     print('Destination received')
     print(request.json['dest'])
 
-    route = findRoute(request.json['dest'])
+    route = findRoute(request.json['st'], request.json['dest'])
     response_data = {
         'route': route
     }
@@ -19,5 +19,4 @@ def dest():
 
 
 if __name__ == "__main__":
-
     app.run(host="0.0.0.0", port=5500)

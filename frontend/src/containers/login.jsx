@@ -17,7 +17,7 @@ export default function Login() {
     checkUser(id, password);
   };
   useEffect(() => {
-    if (userID != "") {
+    if (userID != "" && !islogin) {
       setIslogin(true);
       navigate("/home");
     }
