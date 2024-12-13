@@ -21,10 +21,10 @@ export default function PalletInfo(props) {
   //   };
   const navigate = useNavigate();
 
-  const { storePalletInfo, singlePalletInfo, userID, task } = useIoT();
+  const { updateUser, userPos, storePalletInfo, singlePalletInfo, userID, task } = useIoT();
 
   const [content, setContent] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("static");
   const [type, setType] = useState("");
 
   const statusChange = (event) => {
@@ -35,27 +35,38 @@ export default function PalletInfo(props) {
   };
 
   useEffect(() => {
+    console.log(singlePalletInfo);
     if (task === "putDown" || task === "update") {
       setContent(singlePalletInfo.content);
-      setStatus(singlePalletInfo.status);
       setType(singlePalletInfo.type);
+    }
+    if (task === "update") {
+      setStatus(singlePalletInfo.status);
     }
   }, []);
 
+  // end all task
   useEffect(() => {
     if (task === "") {
       navigate("/home");
     }
   }, [task]);
+
+  // after fillout all information
   const saveInfo = () => {
     console.log("saveInfo");
     if (status === "" || type === "") {
       alert("請填寫完整資料");
       return;
     }
-    const data = { status: status, type: type, content: content, position: singlePalletInfo.position, final_user: userID };
+    if (task !== "update") {
+      const data = { id: singlePalletInfo.id, status: status, type: type, content: content, position: userPos, final_user: userID };
+      storePalletInfo(data);
+    }
+    if (task === "putDown") {
+      updateUser();
+    }
     console.log(data);
-    storePalletInfo(data);
   };
   return (
     <Container maxWidth="xs">
@@ -86,7 +97,7 @@ export default function PalletInfo(props) {
             </Select>
           </FormControl>
           {/* content */}
-          <TextField id="standard-required" label="物品" defaultValue="" variant="standard" onChange={(e) => setContent(e.target.value)} sx={{ mt: 3, width: "60%" }} />
+          <TextField id="standard-required" label="物品" defaultValue={singlePalletInfo.content} variant="standard" onChange={(e) => setContent(e.target.value)} sx={{ mt: 3, width: "60%" }} />
         </Box>
         <Box sx={{ padding: 3 }}>
           <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} onClick={() => saveInfo()}>

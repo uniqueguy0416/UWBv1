@@ -36,6 +36,8 @@ const IoTContext = createContext({
   getAvailablePallet: () => {},
   availablePallet: {},
   takeAwayPallet: () => {},
+  check: Boolean,
+  updateUser: () => {},
 });
 const IoTProvider = (props) => {
   const [tempPalletDest, setTempPalletDest] = useState([]);
@@ -47,14 +49,15 @@ const IoTProvider = (props) => {
   const [islogin, setIslogin] = useState(false); // check if user is login
   const [userPos, setUserPos] = useState([121.54457, 25.017855]); //get user position
   const [task, setTask] = useState(""); // find, putDown, update, addPallet
-  const [singlePalletInfo, setSinglePalletInfo] = useState({ status: "static", type: "", content: "", position: [0, 0], final_user: "" });
+  const [singlePalletInfo, setSinglePalletInfo] = useState({ id: 0, status: "static", type: "", content: "", position: [0, 0], final_user: "" });
   const [selection, setSelection] = useState([]); // available type/content of pallets
   const [availablePallet, setAvailablePallet] = useState({});
-  const checkUserPallet = async (id) => {
+  const [check, setCheck] = useState(false);
+  const checkUserPallet = async () => {
     // check if the user has a pallet
     setPending(true);
     console.log("checkUserPallet in");
-    sendData({ type: "checkUserPallet", payload: { userID: id } });
+    sendData({ type: "checkUserPallet", payload: { userID: userID, task: task } });
   };
   const findSelection = (content) => {
     // find available type/content of pallets
@@ -77,24 +80,30 @@ const IoTProvider = (props) => {
     setTempPalletDest([]);
     setSelected(false);
     setPending(false);
-    setSinglePalletInfo({ status: "static", type: "", content: "", position: [0, 0], final_user: "" });
+    setSinglePalletInfo({ id: 0, status: "static", type: "", content: "", position: [0, 0], final_user: "" });
     setSelection([]);
     setAvailablePallet({});
+    setCheck(false);
   };
   const getUserPos = async (id) => {
     // get user position
     setPending(true);
     // ToDo: call get position api
-    setUserPos([121.54457, 25.017855]);
+    setUserPos([121.54455, 25.01799]);
   };
   // For putDown
   // get pallet info by using user's pallet id
-  const getPalletInfo = async (id) => {};
+  const getPalletInfo = async () => {
+    sendData({ type: "findOnePallet", payload: { userID: userID } });
+  };
   const getAvailablePallet = async (req) => {
     // for finding pallet
     console.log("getAvailablePallet in", req);
     const data = { type: "findAvailablePallet", payload: req };
     sendData(data);
+  };
+  const updateUser = async () => {
+    sendData({ type: "updateUser", payload: { userID: userID, palletID: "" } });
   };
   const storePalletInfo = async (data) => {
     //Todo: send to mongodb
@@ -102,19 +111,22 @@ const IoTProvider = (props) => {
       case "addPallet": {
         data = {
           type: "addPallet",
-          payload: {
-            status: data.status,
-            type: data.type,
-            content: data.content,
-            position: userPos,
-            final_user: data.final_user,
-          },
+          payload: data,
         };
+        sendData(data);
+        break;
+      }
+      case "putDown": {
+        data = {
+          type: "updatePallet",
+          payload: data,
+        };
+        sendData(data);
         break;
       }
     }
-    sendData(data);
   };
+
   // send to mongodb
   const sendData = async (data) => {
     await DBclient.send(JSON.stringify(data));
@@ -126,10 +138,14 @@ const IoTProvider = (props) => {
     const { type, payload } = JSON.parse(data);
     switch (type) {
       // display the available pallets
+      case "findOnePallet": {
+        console.log(payload);
+        setSinglePalletInfo(payload);
+        break;
+      }
       case "successful": {
         alert(payload.msg);
         // reset information
-        setSinglePalletInfo({ status: "static", type: "", content: "", position: [0, 0], final_user: "" });
         reset();
 
         break;
@@ -138,6 +154,18 @@ const IoTProvider = (props) => {
         const { selected } = payload;
         console.log("selected", selected);
         setSelection(selected);
+        break;
+      }
+      case "checkUserPallet": {
+        const { status, msg } = payload;
+        console.log("checkUserPallet", payload);
+        if (status) {
+          setCheck(true);
+        } else {
+          alert(msg);
+          setTask("");
+        }
+        setPending(false);
         break;
       }
       case "checkUser": {
@@ -165,18 +193,6 @@ const IoTProvider = (props) => {
       default:
         break;
     }
-
-    // switch (task) {
-    //   case "CHAT":
-    //     console.log(payload);
-    //     setMessages(payload);
-    //     break;
-    //   case "MESSAGE": {
-    //     console.log(payload, "djfklskjf");
-    //     setMessages(() => [...messages, payload]);
-    //     break;
-    //   }
-    // }
   };
   //JSON.stringify() converting object to string
   //JSON.parse(str[,reviver]) converting string to object
@@ -212,6 +228,11 @@ const IoTProvider = (props) => {
   return (
     <IoTContext.Provider
       value={{
+        updateUser,
+        getPalletInfo,
+        check,
+        setCheck,
+        checkUserPallet,
         takeAwayPallet,
         availablePallet,
         getAvailablePallet,

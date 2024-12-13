@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useIoT } from "../hooks/useIoT";
 import CircularProgress from "@mui/material/CircularProgress";
+import { use } from "react";
 
 const Wrapper = styled.div`
   width: 70%;
@@ -25,18 +26,18 @@ export default function Home(props) {
   console.log(import.meta.env.VITE_Mapbox_API_Token);
   const navigate = useNavigate();
 
-  const { pending, setPending, userPos, getUserPos, task, setTask } = useIoT();
+  const { getPalletInfo, setCheck, check, checkUserPallet, pending, setPending, userPos, getUserPos, task, setTask } = useIoT();
 
   useEffect(() => {
     switch (task) {
       case "find":
-        setPending(false);
-        navigate("/selectType");
+        // setPending(false);
+        // navigate("/selectType");
+        checkUserPallet();
         break;
       case "putDown":
         // Todo: check if there is a pallet of this user
-        setPending(false);
-        navigate("/showPos");
+        checkUserPallet();
         break;
       case "update":
         // Todo: getNearPallet();
@@ -58,6 +59,18 @@ export default function Home(props) {
     }
   }, [task]);
 
+  // check user's palletID existence
+  useEffect(() => {
+    console.log("check", check);
+    if (check) {
+      setPending(false);
+      if (task === "putDown") {
+        getPalletInfo();
+        navigate("/showPos");
+      } else navigate("/selectType");
+      setCheck(false);
+    }
+  }, [check]);
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="90vh">
       {pending ? (
