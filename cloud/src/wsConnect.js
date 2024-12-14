@@ -2,7 +2,7 @@ import PalletModel from "../models/pallet.js";
 import UserModel from "../models/User.js";
 
 const sendData = (data, ws) => {
-  console.log("server sendData");
+  console.log("server sendData", data);
   ws.send(JSON.stringify(data));
 };
 
@@ -28,18 +28,23 @@ export default {
 
     switch (type) {
       case "checkUserPallet": {
+        console.log("checkUserPallet");
         const { userID, task } = payload;
-        const user = await UserModel.find({ userID });
-        if (user.palletID == "") {
-          if (task == "putDown") {
-            sendData({ type: "checkUserPallet", payload: { status: false, msg: "You don't have pallet" } }, ws);
+        const user = await UserModel.findOne({ userID: userID });
+        console.log(payload, user);
+        console.log(user.palletID, "user");
+        if (user.palletID === "" || user.palletID === undefined) {
+          if (task === "putDown") {
+            sendData({ type: "checkUserPallet", payload: { status: false, msg: "You don't have a pallet" } }, ws);
           } else {
-            sendData({ type: "checkUserPallet", payload: { status: true, msg: "You don't have pallet" } }, ws);
+            sendData({ type: "checkUserPallet", payload: { status: true, msg: "You don't have a pallet" } }, ws);
           }
         } else {
-          if (task == "takeAway") sendData({ type: "checkUserPallet", payload: { status: false, msg: "You already have pallet" } }, ws);
+          if (task == "find") sendData({ type: "checkUserPallet", payload: { status: false, msg: "You already have pallet" } }, ws);
           else sendData({ type: "checkUserPallet", payload: { status: true, msg: "You already have pallet" } }, ws);
         }
+
+        break;
       }
       case "findSelections": {
         console.log("hi");
@@ -104,6 +109,7 @@ export default {
         var pallet = await PalletModel.findOne({ _id: palletID.toString() });
         pallet.status = "take-away";
         pallet.final_user = userID;
+        console.log(pallet);
         await pallet.save();
         var user = await UserModel.findOne({ userID });
         user.palletID = palletID;
@@ -124,8 +130,12 @@ export default {
       case "findOnePallet": {
         // find one pallet by palletID
         // Todo: not tested
-        const { palletID } = payload;
-        const pallet = await PalletModel.findOne({ palletID });
+        const { userID } = payload;
+        console.log("findOnePallet");
+        const user = await UserModel.findOne({ userID });
+
+        const pallet = await PalletModel.findById(user.palletID);
+        console.log("findOnePallet", pallet);
         if (!pallet) {
           sendData({ type: "findOnePallet", payload: { msg: "Pallet not found" } }, ws);
         } else {
@@ -149,6 +159,19 @@ export default {
         break;
       }
       case "updatePallet": {
+        const { id, status, type, content, position, final_user } = payload;
+        const updatedPallet = await PalletModel.findByIdAndUpdate(
+          id,
+          { status, type, content, position, final_user },
+          { new: true } // Return the updated document
+        );
+
+        break;
+      }
+      case "updateUser": {
+        const { userID, palletID } = payload;
+        const updatedUser = await UserModel.findOneAndUpdate({ userID }, { palletID }, { new: true });
+        sendData({ type: "successful", payload: { msg: "Successfully put down" } });
         break;
       }
       case "checkUser": {
