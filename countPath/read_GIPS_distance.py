@@ -12,9 +12,9 @@ anchor_IDs = ['0241000000000000','0341000000000000','0541000000000000']
 BAUD_RATES = 57600    
 
 # anchor position
-x0,  y0  = 25.017662, 121.544473    # CRS coordinate of anchor 6
-x02, y02 = 25.017740, 121.544447    # CRS coordinate of anchor 7
-x03, y03 = 25.017656, 121.544656    # CRS coordinate of anchor 9
+x0,  y0  = 25.01797, 121.54447    # CRS coordinate of anchor 6
+x02, y02 = 25.0180302, 121.5445341    # CRS coordinate of anchor 7
+x03, y03 = 25.0178675, 121.5445744    # CRS coordinate of anchor 9
 x_multiplier = 111000               # unit:(m/longitude)
 y_multiplier = 100000               # unit:(m/latitude)
 x1, y1 = 0, 0                       # anchor 6
@@ -70,14 +70,15 @@ class UWBpos:
 
     def fake_read(self):
         random.seed()
-        self.diss[0] = 100 * random.random()
-        self.diss[1] = 100 * random.random()
-        self.diss[2] = 100 * random.random()
+        self.diss[0] = 10 * random.random()
+        self.diss[1] = 10 * random.random()
+        self.diss[2] = 30 - self.diss[0] - self.diss[1]
+        print(f"fake read: {self.diss[0]}, {self.diss[1]}, {self.diss[2]}")
 
     def compute_relative(self):
-        r1 = self.diss[1]
-        r2 = self.diss[2]
-        r3 = self.diss[3]
+        r1 = self.diss[0]
+        r2 = self.diss[1]
+        r3 = self.diss[2]
         C = self.C0 - np.array([r1*r1, r2*r2, r3*r3])
         CY = np.cross(C,self.Y).dot(np.array([1, 1, 1]))
         XC = np.cross(self.X,C).dot(np.array([1, 1, 1]))
@@ -87,7 +88,7 @@ class UWBpos:
 
     def compute_CRS(self):
         x, y = self.compute_relative()
-        return (x0 + x / x_multiplier, y0 + y / y_multiplier)
+        return (x0 + (x / x_multiplier), y0 + (y / y_multiplier))
 
     def recalibrate(self):
         print("hold tag close to anchor 6")

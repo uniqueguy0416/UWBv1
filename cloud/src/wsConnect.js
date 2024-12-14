@@ -1,5 +1,5 @@
 import PalletModel from "../models/pallet.js";
-import UserModel from "../models/User.js";
+import UserModel from "../models/user.js";
 
 const sendData = (data, ws) => {
   console.log("server sendData", data);
