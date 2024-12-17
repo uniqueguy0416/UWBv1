@@ -160,6 +160,7 @@ export default {
       }
       case "updatePallet": {
         const { id, status, type, content, position, final_user } = payload;
+        console.log("updatePallet", payload);
         const updatedPallet = await PalletModel.findByIdAndUpdate(
           id,
           { status, type, content, position, final_user },
@@ -171,7 +172,7 @@ export default {
       case "updateUser": {
         const { userID, palletID } = payload;
         const updatedUser = await UserModel.findOneAndUpdate({ userID }, { palletID }, { new: true });
-        sendData({ type: "successful", payload: { msg: "Successfully put down" } });
+        sendData({ type: "successful", payload: { msg: "Successfully put down" } }, ws);
         break;
       }
       case "checkUser": {
