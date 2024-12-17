@@ -12,11 +12,13 @@ anchor_IDs = ['0241000000000000','0341000000000000','0541000000000000']
 BAUD_RATES = 57600    
 
 # anchor position
-x0,  y0  = 25.01797, 121.54447    # CRS coordinate of anchor 6
-x02, y02 = 25.0180302, 121.5445341    # CRS coordinate of anchor 7
-x03, y03 = 25.0178675, 121.5445744    # CRS coordinate of anchor 9
-x_multiplier = 111000               # unit:(m/longitude)
-y_multiplier = 100000               # unit:(m/latitude)
+x0,  y0  = 25.017953, 121.5446555 # CRS coordinate of anchor 6
+x02, y02 = 25.017850, 121.54453    # CRS coordinate of anchor 7
+x03, y03 = 25.017990, 121.544395    # CRS coordinate of anchor 9
+# x_multiplier = 111000               # unit:(m/longitude)
+x_multiplier = 49936               # unit:(m/longitude)
+# y_multiplier = 100000               # unit:(m/latitude)
+y_multiplier = 51006              # unit:(m/latitude)
 x1, y1 = 0, 0                       # anchor 6
 x2, y2 = (x02 - x0) * x_multiplier, (y02 - y0) * y_multiplier   # anchor 7
 x3, y3 = (x03 - x0) * x_multiplier, (y03 - y0) * y_multiplier   # anchor 9
@@ -33,20 +35,23 @@ class UWBpos:
         try:
             self.ser_UWB = serial.Serial(COM_PORT, BAUD_RATES) 
             self.ser_success = True
-        except:
-            print("Cannot connect to {}.".format(COM_PORT))
+            print("Connected to {}".format(COM_PORT))
+        except Exception as e:
+            print("Cannot connect to {}. Error message: ".format(COM_PORT))
+            print(e.with_traceback)
             self.ser_success = False
 
         self.X = np.array([x1, x2, x3])
         self.Y = np.array([y1, y2, y3])
         self.XY = np.cross(self.X,self.Y).dot(np.array([1, 1, 1]))
         self.C0 = np.array([(x1*x1 + y1*y1), (x2*x2 + y2*y2), (x3*x3 + y3*y3)])
-        self.diss = np.zeros(4)
+        self.diss = np.zeros(3)
         print("UWB initialized successfully.")
         print("anchor 6 coordinate:({}, {})".format(x0, y0))
                 
     def UWB_read(self):
         if self.ser_success:
+            self.ser_UWB.flushInput()
             rx = self.ser_UWB.read(66 * len(anchor_IDs))
             rx = binascii.hexlify(rx).decode('utf-8')
             
@@ -60,6 +65,7 @@ class UWBpos:
                         dis = int(dis,16)
                         if dis >= 32768:      # solve sign
                             dis = 0
+                        print("dis[{}] read: {}".format(index, dis))
                     else:
                        dis = 0
                 else:
@@ -88,17 +94,36 @@ class UWBpos:
 
     def compute_CRS(self):
         x, y = self.compute_relative()
+        print("multiplier:{}, {}".format(x_multiplier, y_multiplier))
+        return (x0 + (x / x_multiplier), y0 + (y / y_multiplier))
+
+    def UWB_read_compute_CRS_5(self):
+        x, y = 0, 0
+        i = 0
+        while i < 5:
+            self.UWB_read()
+            if (0 not in self.diss):
+                _x, _y = self.compute_relative()
+                x += _x
+                y += _y
+                i += 1
+                print(i)
+        x /= 5
+        y /= 5
+        print("multiplier:{}, {}".format(x_multiplier, y_multiplier))
         return (x0 + (x / x_multiplier), y0 + (y / y_multiplier))
 
     def recalibrate(self):
         print("hold tag close to anchor 6")
         d2, d3 = 0, 0
-        for count in range(10):
+        count = 1
+        while count <= 10:
             diss = self.UWB_read()
-            if diss[0] < 10:
+            if diss[0] < 0.1:
                 print(f"taking test value {count}/10...")
                 d2 += diss[1]
                 d3 += diss[2]
+                count += 1
         d2 /= 10
         d3 /= 10
         x2, y2 = x02 - x0, y02 - y0
@@ -112,6 +137,7 @@ class UWBpos:
         print("recalibration completed! new multipliers:")
         print(f"x = {x_multiplier}")
         print(f"y = {y_multiplier}")
+        return x_multiplier, y_multiplier
 
     def get_anchor_CRS(self, idx):
         if idx == '6':
