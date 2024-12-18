@@ -13,19 +13,33 @@ export default function PalletMap(props) {
   const mapRef = useRef();
   const mapContainerRef = useRef();
   const navigate = useNavigate();
-  const { takeAwayPallet, userPos, availablePallet, tempPalletDest, setTempPalletDest, route, selected, closeEnough, setSelected, sendData, addUser } = useIoT();
+  const { getUserPos, takeAwayPallet, userPos, availablePallet, tempPalletDest, setTempPalletDest, route, selected, closeEnough, setSelected, sendData, addUser } = useIoT();
   const [palletID, setPalletID] = useState("");
+  var clock;
   const click = () => {
-    console.log("click");
-
+    console.log("click");	
     setSelected(true);
+    clock = setInterval(getUserPos, 1000);
   };
   const takeAway = () => {
+    clearInterval(clock);
     console.log("takeAway");
     takeAwayPallet(palletID);
     navigate("/home");
   };
-
+  useEffect(()=>{
+  console.log(userPos);
+if (selected) {
+      mapRef.current.getSource('UserPos').setData({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: userPos,
+        },
+      });
+    };
+  },[userPos]);
   const clickPallet = () => {};
   // cross[-0.000015]
   // setup map
@@ -119,7 +133,7 @@ export default function PalletMap(props) {
           properties: {},
           geometry: {
             type: "Point",
-            coordinates: userPos,
+            coordinates: userPos||[],
           },
         },
       });
@@ -159,16 +173,6 @@ export default function PalletMap(props) {
         paint: {
           "line-color": "#888",
           "line-width": 8,
-        },
-      });
-      mapRef.current.addLayer({
-        id: "Points",
-        type: "circle", // Or use "symbol" for icons
-        source: "combinedSource",
-        filter: ["==", "$type", "Point"],
-        paint: {
-          "circle-radius": 8,
-          "circle-color": "#007FFF",
         },
       });
     });
