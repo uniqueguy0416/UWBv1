@@ -12,16 +12,19 @@ anchor_IDs = ['0241000000000000','0341000000000000','0541000000000000']
 BAUD_RATES = 57600    
 
 # anchor position
-x0,  y0  = 25.017953, 121.5446555 # CRS coordinate of anchor 6
-x02, y02 = 25.017850, 121.54453    # CRS coordinate of anchor 7
-x03, y03 = 25.017990, 121.544395    # CRS coordinate of anchor 9
+x0,  y0  = 25.017968, 121.5446405 # CRS coordinate of anchor 6
+x02, y02 = 25.017863, 121.544518   # CRS coordinate of anchor 7
+x03, y03 = 25.017988, 121.544395    # CRS coordinate of anchor 9
 # x_multiplier = 111000               # unit:(m/longitude)
-x_multiplier = 49936               # unit:(m/longitude)
 # y_multiplier = 100000               # unit:(m/latitude)
-y_multiplier = 51006              # unit:(m/latitude)
+_x_multiplier = 50000              # unit:(m/longitude)
+_y_multiplier = 50000              # unit:(m/latitude)
+x_multiplier =  55000              # unit:(m/longitude)
+y_multiplier =  55000              # unit:(m/latitude)
 x1, y1 = 0, 0                       # anchor 6
-x2, y2 = (x02 - x0) * x_multiplier, (y02 - y0) * y_multiplier   # anchor 7
-x3, y3 = (x03 - x0) * x_multiplier, (y03 - y0) * y_multiplier   # anchor 9
+x2, y2 = (x02 - x0) * _x_multiplier, (y02 - y0) * _y_multiplier   # anchor 7
+x3, y3 = (x03 - x0) * _x_multiplier, (y03 - y0) * _y_multiplier   # anchor 9
+
 
 
 def swapEndianness(hexstring):
@@ -32,13 +35,17 @@ def swapEndianness(hexstring):
 class UWBpos:
     def __init__(self):
         print("initializing UWB...")
+        print("(anchor 7)x2={}, y2={}".format(x2, y2))
+        print("(anchor 9)x3={}, y3={}".format(x3, y3))
+        print("estimated anchor 6-7:{}".format((x2**2+y2**2)**(0.5)))
+        print("estimated anchor 6-9:{}".format((x3**2+y3**2)**(0.5)))
         try:
             self.ser_UWB = serial.Serial(COM_PORT, BAUD_RATES) 
             self.ser_success = True
             print("Connected to {}".format(COM_PORT))
         except Exception as e:
             print("Cannot connect to {}. Error message: ".format(COM_PORT))
-            print(e.with_traceback)
+            print(e)
             self.ser_success = False
 
         self.X = np.array([x1, x2, x3])
@@ -112,6 +119,7 @@ class UWBpos:
         y /= 5
         print("multiplier:{}, {}".format(x_multiplier, y_multiplier))
         return (x0 + (x / x_multiplier), y0 + (y / y_multiplier))
+    # return (x0, y0 + (y / y_multiplier))
 
     def recalibrate(self):
         print("hold tag close to anchor 6")
