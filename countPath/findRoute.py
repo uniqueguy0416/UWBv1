@@ -125,9 +125,11 @@ def findRoute(st=[], dest=[]):
     for i in range(1, 9):
         for k in range(i + 1, 9):
             if k-i == 1 or k-i == 4:
-                len = ((graph.vertex_data[i][0] - graph.vertex_data[k][0])**2 +
-                       (graph.vertex_data[i][1] - graph.vertex_data[k][1])**2)**0.5
-                graph.add_edge(i, k, len)
+                if k != 5 or i != 4:
+                    print(i, k)
+                    len = ((graph.vertex_data[i][0] - graph.vertex_data[k][0])**2 +
+                           (graph.vertex_data[i][1] - graph.vertex_data[k][1])**2)**0.5
+                    graph.add_edge(i, k, len)
             else:
                 graph.add_edge(i, k, 0)
 
