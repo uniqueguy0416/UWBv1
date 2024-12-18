@@ -132,7 +132,7 @@ def findRoute(st=[], dest=[]):
                     graph.add_edge(i, k, len)
             else:
                 graph.add_edge(i, k, 0)
-
+    print(graph.adj_matrix)
     # add edges (st and dest)
     addEdge(0, 9, data)
     for i in range(1, 9):
@@ -145,3 +145,7 @@ def findRoute(st=[], dest=[]):
 
     print(finalRoute)
     return finalRoute
+
+
+if __name__ == "__main__":
+    findRoute()

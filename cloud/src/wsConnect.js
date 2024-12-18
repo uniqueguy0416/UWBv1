@@ -140,7 +140,7 @@ export default {
       case "takeAway": {
         console.log("takeAway", payload);
         const { palletID, userID } = payload;
-        var pallet = await PalletModel.findOne({ _id: palletID.toString() });
+        var pallet = await PalletModel.findOne({ _id: palletID });
         pallet.status = "take-away";
         pallet.final_user = userID;
         console.log(pallet);
