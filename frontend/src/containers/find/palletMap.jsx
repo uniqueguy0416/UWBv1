@@ -182,16 +182,16 @@ export default function PalletMap(props) {
         },
       });
 
-      mapRef.current.addLayer({
-        id: "points",
-        type: "circle", // Or use "symbol" for icons
-        source: "combinedSource",
-        filter: ["==", "$type", "Point"],
-        paint: {
-          "circle-radius": 8,
-          "circle-color": "#ff0000",
-        },
-      });
+      // mapRef.current.addLayer({
+      //   id: "points",
+      //   type: "circle", // Or use "symbol" for icons
+      //   source: "combinedSource",
+      //   filter: ["==", "$type", "Point"],
+      //   paint: {
+      //     "circle-radius": 8,
+      //     "circle-color": "#ff0000",
+      //   },
+      // });
     });
 
     //click event on points-layer
