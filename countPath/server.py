@@ -70,10 +70,10 @@ def dest():
 @app.route('/pos')
 def getPos():
     # pos.recalibrate()
-    pos.fake_read()     # if you don't have UWB module, use this
-    # pos.UWB_read()      # if you have UWB module, use this
+    # pos.fake_read()     # if you don't have UWB module, use this
+    pos.UWB_read()      # if you have UWB module, use this
     # x, y = pos.compute_CRS()
-    # x, y = pos.UWB_read_compute_CRS_5()
+    x, y = pos.UWB_read_compute_CRS_5()
     # x, y = pos.get_anchor_CRS('6')
     print(f"coordinate: {y}, {x}")
     return jsonify([x, y]), 200
