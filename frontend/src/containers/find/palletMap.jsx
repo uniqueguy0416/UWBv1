@@ -17,7 +17,7 @@ export default function PalletMap(props) {
   const [palletID, setPalletID] = useState("");
   var clock;
   const click = () => {
-    console.log("click");	
+    console.log("click");
     setSelected(true);
     clock = setInterval(getUserPos, 1000);
   };
@@ -27,19 +27,19 @@ export default function PalletMap(props) {
     takeAwayPallet(palletID);
     navigate("/home");
   };
-  useEffect(()=>{
-  console.log(userPos);
-if (selected) {
-      mapRef.current.getSource('UserPos').setData({
-        type: 'Feature',
+  useEffect(() => {
+    console.log(userPos);
+    if (selected) {
+      mapRef.current.getSource("UserPos").setData({
+        type: "Feature",
         properties: {},
         geometry: {
-          type: 'Point',
+          type: "Point",
           coordinates: userPos,
         },
       });
-    };
-  },[userPos]);
+    }
+  }, [userPos]);
   const clickPallet = () => {};
   // cross[-0.000015]
   // setup map
@@ -133,7 +133,7 @@ if (selected) {
           properties: {},
           geometry: {
             type: "Point",
-            coordinates: userPos||[],
+            coordinates: userPos || [],
           },
         },
       });
@@ -173,6 +173,17 @@ if (selected) {
         paint: {
           "line-color": "#888",
           "line-width": 8,
+        },
+      });
+
+      mapRef.current.addLayer({
+        id: "points",
+        type: "circle", // Or use "symbol" for icons
+        source: "combinedSource",
+        filter: ["==", "$type", "Point"],
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "#ff0000",
         },
       });
     });
