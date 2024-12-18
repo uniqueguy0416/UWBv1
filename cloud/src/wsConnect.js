@@ -27,6 +27,13 @@ export default {
     console.log("onmessage", data);
 
     switch (type) {
+      case "logout": {
+        const { userID } = payload;
+        const user = await UserModel.findOne({ userID });
+        user.status = "not-active";
+        await user.save();
+        sendData({ type: "successful", payload: { msg: "Logout successfully" } }, ws);
+      }
       case "findAllPallet": {
         // find all pallets(static/broken)
         var pallets = await PalletModel.find({ status: { $in: ["static", "broken"] } });

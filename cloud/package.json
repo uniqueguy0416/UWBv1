@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mui/styles": "^6.2.1",
     "cors": "^2.8.5",
     "dotenv-defaults": "^5.0.2",
     "express": "^4.21.2",

@@ -61,6 +61,7 @@ export default function PalletMap(props) {
           features: availablePallet,
         },
       });
+
       // add a layer to use the source content
       mapRef.current.addLayer({
         id: "maine",
@@ -158,6 +159,16 @@ export default function PalletMap(props) {
         paint: {
           "line-color": "#888",
           "line-width": 8,
+        },
+      });
+      mapRef.current.addLayer({
+        id: "Points",
+        type: "circle", // Or use "symbol" for icons
+        source: "combinedSource",
+        filter: ["==", "$type", "Point"],
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "#007FFF",
         },
       });
     });

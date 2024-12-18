@@ -7,18 +7,26 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useIoT } from "../hooks/useIoT";
 import CircularProgress from "@mui/material/CircularProgress";
-import { use } from "react";
-
+import SearchBar from "./searchBar";
+// // width: 50%;
+// margin: 5px 5px 5px 5px; // top right bottom left
+//   display: flex;
+//   flex-direction: row;
+//   flex-wrap: wrap;
+//   align-items: start;
+//   justify-content: center;
 const Wrapper = styled.div`
-  width: 70%;
-  height: 100%;
-  margin: 5px 5px 5px 5px; // top right bottom left
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: start;
-  justify-content: center;
+  height: 50%;
+  padding: 0px;
+  &:hover {
+    background-color: darkblue; /* Background color on hover */
+    color: white; /* Text color on hover */
+  }
 `;
+const hoverStyle = {
+  backgroundColor: "#c5e1a5", // 滑鼠懸停時的背景色
+  cursor: "pointer",
+};
 
 const pages = ["尋找棧板", "放下棧板", "更新棧板資料", "新增棧板"];
 
@@ -26,7 +34,7 @@ export default function Home(props) {
   console.log(import.meta.env.VITE_Mapbox_API_Token);
   const navigate = useNavigate();
 
-  const { getNearPallet, availablePallet, getPalletInfo, setCheck, check, checkUserPallet, pending, setPending, userPos, getUserPos, task, setTask } = useIoT();
+  const { userID, getNearPallet, availablePallet, getPalletInfo, setCheck, check, checkUserPallet, pending, setPending, userPos, getUserPos, task, setTask } = useIoT();
 
   useEffect(() => {
     switch (task) {
@@ -46,7 +54,9 @@ export default function Home(props) {
         break;
     }
   }, [userPos]);
-
+  useEffect(() => {
+    if (userID === "") navigate("/");
+  }, [userID]);
   useEffect(() => {
     // first get user position
     if (task !== "") {
@@ -74,28 +84,96 @@ export default function Home(props) {
     }
   }, [availablePallet]);
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="90vh">
-      {pending ? (
-        <CircularProgress />
-      ) : (
-        <Stack spacing={2} sx={{ width: 1 / 3, textAlign: "center" }}>
-          <Typography variant="h2" component="h2">
-            棧板管理系統
-          </Typography>
-          <Button variant="outlined" onClick={() => setTask("find")}>
-            尋找棧板
-          </Button>
-          <Button variant="outlined" onClick={() => setTask("putDown")}>
-            放下棧板
-          </Button>
-          <Button variant="outlined" onClick={() => setTask("update")}>
-            更新棧板資料
-          </Button>
-          <Button variant="outlined" onClick={() => setTask("addPallet")}>
-            新增棧板
-          </Button>
-        </Stack>
-      )}
+    <Box sx={{ width: "100%", padding: "0px", height: "100%" }}>
+      <SearchBar />
+      <Box sx={{ padding: "0" }} display="flex" justifyContent="center" alignItems="center" height="90vh" minHeight="90vh">
+        {pending ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <Box spacing={2} sx={{ width: 1 / 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="50%"
+                width="100%"
+                borderRight="4px #1976D2 solid"
+                borderBottom="4px #1976D2 solid"
+                sx={{
+                  "&:hover": hoverStyle,
+                }}
+                onClick={() => setTask("find")}
+              >
+                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                  尋找棧板
+                </Typography>
+              </Box>
+
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="50%"
+                width="100%"
+                borderRight="4px #1976D2 solid"
+                borderBottom="4px #1976D2 solid"
+                sx={{
+                  "&:hover": hoverStyle,
+                }}
+                onClick={() => setTask("putDown")}
+              >
+                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                  放下棧板
+                </Typography>
+                {/* <Button sx={{ width: "100%", height: "100%" }} variant="outlined" onClick={() => setTask("find")}>
+                  尋找棧板
+                </Button> */}
+              </Box>
+            </Box>
+            <Box spacing={2} sx={{ width: 1 / 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="50%"
+                width="100%"
+                borderLeft="4px #1976D2 solid"
+                borderBottom="4px #1976D2 solid"
+                sx={{
+                  "&:hover": hoverStyle,
+                }}
+                onClick={() => setTask("update")}
+              >
+                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                  更新棧板資料
+                </Typography>
+              </Box>
+
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="50%"
+                width="100%"
+                borderLeft="4px #1976D2 solid"
+                borderBottom="4px #1976D2 solid"
+                sx={{
+                  "&:hover": hoverStyle,
+                }}
+                onClick={() => setTask("addPallet")}
+              >
+                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                  新增棧板
+                </Typography>
+                {/* <Button sx={{ width: "100%", height: "100%" }} variant="outlined" onClick={() => setTask("find")}>
+                  尋找棧板
+                </Button> */}
+              </Box>
+            </Box>
+          </>
+        )}
+      </Box>
     </Box>
   );
 }

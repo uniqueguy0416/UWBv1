@@ -38,6 +38,7 @@ const IoTContext = createContext({
   takeAwayPallet: () => {},
   check: Boolean,
   updateUser: () => {},
+  logout: () => {},
 });
 const IoTProvider = (props) => {
   const [tempPalletDest, setTempPalletDest] = useState([]);
@@ -91,6 +92,12 @@ const IoTProvider = (props) => {
     setSelection([]);
     setAvailablePallet({});
     setCheck(false);
+  };
+  const logout = () => {
+    setIslogin(false);
+    setUserID("");
+    reset();
+    sendData({ type: "logout", payload: { userID: userID } });
   };
   const getUserPos = async (id) => {
     // get user position
@@ -262,6 +269,7 @@ const IoTProvider = (props) => {
   return (
     <IoTContext.Provider
       value={{
+        logout,
         getNearPallet,
         updateUser,
         getPalletInfo,
