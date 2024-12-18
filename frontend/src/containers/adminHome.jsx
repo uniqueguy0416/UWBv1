@@ -30,7 +30,7 @@ const hoverStyle = {
 
 const pages = ["尋找棧板", "放下棧板", "更新棧板資料", "新增棧板"];
 
-export default function Home(props) {
+export default function AdminHome(props) {
   console.log(import.meta.env.VITE_Mapbox_API_Token);
   const navigate = useNavigate();
 

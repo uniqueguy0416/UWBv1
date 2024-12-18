@@ -19,7 +19,8 @@ export default function Login() {
   useEffect(() => {
     if (userID != "" && !islogin) {
       setIslogin(true);
-      navigate("/home");
+      if (userID === "admin") navigate("/adminHome");
+      else navigate("/home");
     }
   }, [userID]);
   return (

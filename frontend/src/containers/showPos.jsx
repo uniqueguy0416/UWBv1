@@ -23,7 +23,7 @@ export default function ShowPos(props) {
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       center: [121.54446, 25.01793],
-      zoom: 20,
+      zoom: 19.5,
       // scrollZoom: false,
       bearing: -42, // rotate angle
       // maxBounds: [

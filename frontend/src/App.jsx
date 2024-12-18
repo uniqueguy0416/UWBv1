@@ -10,6 +10,7 @@ import Login from "./containers/login";
 import { IoTProvider } from "./hooks/useIoT";
 import ShowPos from "./containers/showPos";
 import SelectContent from "./containers/find/selectContent";
+import AdminHome from "./containers/adminHome";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/palletInfo" element={<PalletInfo />} />
           <Route path="/selectContent" element={<SelectContent />} />
           <Route path="/allPallet" element={<AllPallet />} />
+          <Route path="/adminHome" element={<AdminHome />} />
         </Routes>
       </IoTProvider>
     </BrowserRouter>
