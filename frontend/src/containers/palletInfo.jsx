@@ -66,7 +66,11 @@ export default function PalletInfo(props) {
     if (task === "putDown") {
       updateUser();
     }
-    console.log(data);
+    if (task === "update") {
+      const data = { id: singlePalletInfo.id, status: status, type: type, content: content, position: JSON.parse(singlePalletInfo.position), final_user: userID };
+      console.log("update", data, singlePalletInfo);
+      storePalletInfo(data);
+    }
   };
   return (
     <Container maxWidth="xs">

@@ -4,11 +4,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./containers/home";
 import PalletInfo from "./containers/palletInfo";
 import PalletMap from "./containers/find/palletMap";
+import AllPallet from "./containers/allPallet";
 import SelectType from "./containers/find/selectType";
 import Login from "./containers/login";
 import { IoTProvider } from "./hooks/useIoT";
 import ShowPos from "./containers/showPos";
 import SelectContent from "./containers/find/selectContent";
+
 function App() {
   return (
     <BrowserRouter>
@@ -21,6 +23,7 @@ function App() {
           <Route path="/showPos" element={<ShowPos />} />
           <Route path="/palletInfo" element={<PalletInfo />} />
           <Route path="/selectContent" element={<SelectContent />} />
+          <Route path="/allPallet" element={<AllPallet />} />
         </Routes>
       </IoTProvider>
     </BrowserRouter>

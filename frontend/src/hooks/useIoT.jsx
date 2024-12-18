@@ -49,10 +49,17 @@ const IoTProvider = (props) => {
   const [islogin, setIslogin] = useState(false); // check if user is login
   const [userPos, setUserPos] = useState([121.54457, 25.017855]); //get user position
   const [task, setTask] = useState(""); // find, putDown, update, addPallet
-  const [singlePalletInfo, setSinglePalletInfo] = useState({ id: 0, status: "static", type: "", content: "", position: [0, 0], final_user: "" });
+  const [singlePalletInfo, setSinglePalletInfo] = useState({});
   const [selection, setSelection] = useState([]); // available type/content of pallets
   const [availablePallet, setAvailablePallet] = useState({});
   const [check, setCheck] = useState(false);
+  const getNearPallet = async () => {
+    // get near pallet (all)
+    setPending(true);
+    console.log("getNearPallet in");
+    sendData({ type: "findAllPallet", payload: {} });
+  };
+
   const checkUserPallet = async () => {
     // check if the user has a pallet
     setPending(true);
@@ -80,7 +87,7 @@ const IoTProvider = (props) => {
     setTempPalletDest([]);
     setSelected(false);
     setPending(false);
-    setSinglePalletInfo({ id: 0, status: "static", type: "", content: "", position: [0, 0], final_user: "" });
+    setSinglePalletInfo({});
     setSelection([]);
     setAvailablePallet({});
     setCheck(false);
@@ -130,6 +137,14 @@ const IoTProvider = (props) => {
         sendData(data);
         break;
       }
+      case "update": {
+        data = {
+          type: "updatePallet",
+          payload: data,
+        };
+        sendData(data);
+        break;
+      }
     }
   };
 
@@ -143,6 +158,19 @@ const IoTProvider = (props) => {
     const { data } = byteString;
     const { type, payload } = JSON.parse(data);
     switch (type) {
+      case "successfulUpdate": {
+        if (task === "update") {
+          console.log("recive");
+          alert(payload.msg);
+          setTask("");
+        }
+        break;
+      }
+      case "findAllPallet": {
+        console.log(payload);
+        setAvailablePallet(payload);
+        break;
+      }
       // display the available pallets
       case "findOnePallet": {
         console.log(payload);
@@ -234,6 +262,7 @@ const IoTProvider = (props) => {
   return (
     <IoTContext.Provider
       value={{
+        getNearPallet,
         updateUser,
         getPalletInfo,
         check,

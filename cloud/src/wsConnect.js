@@ -27,6 +27,33 @@ export default {
     console.log("onmessage", data);
 
     switch (type) {
+      case "findAllPallet": {
+        // find all pallets(static/broken)
+        var pallets = await PalletModel.find({ status: { $in: ["static", "broken"] } });
+        console.log("findAllPallet", pallets);
+        if (!pallets) {
+          sendData({ type: "findAllPallet", payload: { msg: "Pallet not found" } }, ws);
+        }
+
+        pallets = pallets.map((pallet) => {
+          return {
+            type: "Feature",
+            properties: {
+              id: pallet._id,
+              content: pallet.content,
+              status: pallet.status,
+              type: pallet.type,
+              position: pallet.position,
+            },
+            geometry: {
+              type: "Point",
+              coordinates: pallet.position,
+            },
+          };
+        });
+        sendData({ type: "findAllPallet", payload: pallets }, ws);
+        break;
+      }
       case "checkUserPallet": {
         console.log("checkUserPallet");
         const { userID, task } = payload;
@@ -117,16 +144,7 @@ export default {
         sendData({ type: "successful", payload: { msg: "Pallet taken successfully" } }, ws);
         break;
       }
-      case "findAllPallet": {
-        // find all pallets
-        // Todo: not tested, need to change to geojson
-        const pallets = await PalletModel.find();
-        if (!pallets) {
-          sendData({ type: "findAllPallet", payload: { msg: "Pallet not found" } }, ws);
-        }
-        sendData({ type: "findPallet", payload: pallets }, ws);
-        break;
-      }
+
       case "findOnePallet": {
         // find one pallet by palletID
         // Todo: not tested
@@ -166,7 +184,7 @@ export default {
           { status, type, content, position, final_user },
           { new: true } // Return the updated document
         );
-
+        sendData({ type: "successfulUpdate", payload: { msg: "Successfully updated" } }, ws);
         break;
       }
       case "updateUser": {

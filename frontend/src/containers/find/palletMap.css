@@ -21,7 +21,14 @@
   align-items: center;
   justify-content: center;
 }
-
+.mapboxgl-Popup-content {
+  color: #f3f3dd;
+  background-color: #91785d;
+  border-color: #91785d;
+  max-width: 250px;
+  box-shadow: 3px 3px 2px #8b5d33;
+  font-family: "Oswald";
+}
 .sidebar {
   background-color: rgb(35 55 75 / 90%);
   color: #fff;

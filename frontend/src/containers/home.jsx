@@ -26,22 +26,17 @@ export default function Home(props) {
   console.log(import.meta.env.VITE_Mapbox_API_Token);
   const navigate = useNavigate();
 
-  const { getPalletInfo, setCheck, check, checkUserPallet, pending, setPending, userPos, getUserPos, task, setTask } = useIoT();
+  const { getNearPallet, availablePallet, getPalletInfo, setCheck, check, checkUserPallet, pending, setPending, userPos, getUserPos, task, setTask } = useIoT();
 
   useEffect(() => {
     switch (task) {
       case "find":
-        // setPending(false);
-        // navigate("/selectType");
-        checkUserPallet();
-        break;
       case "putDown":
         // Todo: check if there is a pallet of this user
         checkUserPallet();
         break;
       case "update":
-        // Todo: getNearPallet();
-        navigate("/update");
+        getNearPallet();
         break;
       case "addPallet":
         setPending(false);
@@ -53,6 +48,7 @@ export default function Home(props) {
   }, [userPos]);
 
   useEffect(() => {
+    // first get user position
     if (task !== "") {
       getUserPos();
       console.log("get user pos");
@@ -67,10 +63,16 @@ export default function Home(props) {
       if (task === "putDown") {
         getPalletInfo();
         navigate("/showPos");
-      } else navigate("/selectType");
+      } else if (task === "find") navigate("/selectType");
       setCheck(false);
     }
   }, [check]);
+  useEffect(() => {
+    if (task === "update") {
+      setPending(false);
+      navigate("/allPallet");
+    }
+  }, [availablePallet]);
   return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="90vh">
       {pending ? (
