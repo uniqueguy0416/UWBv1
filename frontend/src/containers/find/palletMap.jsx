@@ -15,15 +15,20 @@ export default function PalletMap(props) {
   const navigate = useNavigate();
   const { getUserPos, takeAwayPallet, userPos, availablePallet, tempPalletDest, setTempPalletDest, route, selected, closeEnough, setSelected, sendData, addUser } = useIoT();
   const [palletID, setPalletID] = useState("");
+  const clockRef = useRef(null); // Use a ref to store the interval ID
   var clock;
   const click = () => {
     console.log("click");
     setSelected(true);
-    clock = setInterval(getUserPos, 1000);
+    //clock = setInterval(getUserPos, 1000);
+    clockRef.current = setInterval(getUserPos, 1000);
   };
   const takeAway = () => {
-    // clearInterval
-    clearInterval(clock);
+    if (clockRef.current) {
+      clearInterval(clockRef.current);
+      clockRef.current = null;
+    }
+    //clearInterval(clock);
     console.log("takeAway");
     takeAwayPallet(palletID);
     navigate("/home");

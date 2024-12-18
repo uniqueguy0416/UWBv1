@@ -67,7 +67,7 @@ export default function PalletInfo(props) {
       updateUser();
     }
     if (task === "update") {
-      const data = { id: singlePalletInfo.id, status: status, type: type, content: content, position: JSON.parse(singlePalletInfo.position), final_user: userID };
+      const data = { id: singlePalletInfo._id, status: status, type: type, content: content, position: JSON.parse(singlePalletInfo.position), final_user: userID };
       console.log("update", data, singlePalletInfo);
       storePalletInfo(data);
     }
