@@ -48,10 +48,10 @@ const IoTProvider = (props) => {
   const [userID, setUserID] = useState(""); // get user id
   const [pending, setPending] = useState(false); // check if the request is pending
   const [islogin, setIslogin] = useState(false); // check if user is login
-  const [userPos, setUserPos] = useState([121.54457, 25.017855]); //get user position
+  const [userPos, setUserPos] = useState([121.45148992471633, 25.175997968596207]); //get user position
   const [task, setTask] = useState(""); // find, putDown, update, addPallet
   const [singlePalletInfo, setSinglePalletInfo] = useState({});
-  const [selection, setSelection] = useState([]); // available type/content of pallets
+  const [selection, setSelection] = useState([]); // available type/content of pallets 121.45148992471633, 25.175997968596207
   const [availablePallet, setAvailablePallet] = useState({});
   const [check, setCheck] = useState(false);
   const getNearPallet = async () => {
@@ -102,7 +102,7 @@ const IoTProvider = (props) => {
   const getUserPos = async (id) => {
     // get user position
     setPending(true);
-    fetch("http://localhost:5500/pos")
+    fetch("http://192.168.0.236:5500/pos")
       .then((response) => response.json())
       .then((data) => {
         setUserPos([data[1], data[0]]);
@@ -239,8 +239,9 @@ const IoTProvider = (props) => {
   //JSON.parse(str[,reviver]) converting string to object
 
   // find route
+  
   useEffect(() => {
-    fetch("http://localhost:5500/dest", {
+    fetch("http://192.168.0.236:5500/dest", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dest: tempPalletDest, st: userPos }),

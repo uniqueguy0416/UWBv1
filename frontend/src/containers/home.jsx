@@ -24,9 +24,13 @@ const Wrapper = styled.div`
   }
 `;
 const hoverStyle = {
-  backgroundColor: "#c5e1a5", // 滑鼠懸停時的背景色
+  backgroundColor: "#bbdefb", // 滑鼠旋停顏色
   cursor: "pointer",
+  transform: "scale(1.03)",
+  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+  transition: "all 0.3s ease-in-out",
 };
+
 
 const pages = ["尋找棧板", "放下棧板", "更新棧板資料", "新增棧板"];
 
@@ -101,11 +105,19 @@ export default function Home(props) {
                 borderRight="4px #1976D2 solid"
                 borderBottom="4px #1976D2 solid"
                 sx={{
-                  "&:hover": hoverStyle,
+                  borderRadius: "16px",
+                  backgroundColor: "#f0f4ff",
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: "#bbdefb", // 淡藍色
+                    transform: "scale(1.03)",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                    cursor: "pointer",
+                  },
                 }}
                 onClick={() => setTask("find")}
               >
-                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant="h4" component="div" sx={{ flexGrow: 1, fontWeight: "bold", textAlign: "center" }}>
                   尋找棧板
                 </Typography>
               </Box>
@@ -119,11 +131,19 @@ export default function Home(props) {
                 borderRight="4px #1976D2 solid"
                 borderBottom="4px #1976D2 solid"
                 sx={{
-                  "&:hover": hoverStyle,
+                  borderRadius: "16px",
+                  backgroundColor: "#f1f8e9",
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: "#c8e6c9",
+                    transform: "scale(1.03)",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                    cursor: "pointer",
+                  },
                 }}
                 onClick={() => setTask("putDown")}
               >
-                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant="h4" component="div" sx={{ flexGrow: 1, fontWeight: "bold", textAlign: "center" }}>
                   放下棧板
                 </Typography>
                 {/* <Button sx={{ width: "100%", height: "100%" }} variant="outlined" onClick={() => setTask("find")}>
@@ -141,11 +161,19 @@ export default function Home(props) {
                 borderLeft="4px #1976D2 solid"
                 borderBottom="4px #1976D2 solid"
                 sx={{
-                  "&:hover": hoverStyle,
+                  borderRadius: "16px",
+                  backgroundColor: "#fffde7",
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: "#fff59d",
+                    transform: "scale(1.03)",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                    cursor: "pointer",
+                  },
                 }}
                 onClick={() => setTask("update")}
               >
-                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant="h4" component="div"  sx={{ flexGrow: 1, fontWeight: "bold", textAlign: "center" }}>
                   更新棧板資料
                 </Typography>
               </Box>
@@ -159,11 +187,19 @@ export default function Home(props) {
                 borderLeft="4px #1976D2 solid"
                 borderBottom="4px #1976D2 solid"
                 sx={{
-                  "&:hover": hoverStyle,
+                  borderRadius: "16px",
+                  backgroundColor: "#fff3e0",
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": {
+                    backgroundColor: "#ffcc80",
+                    transform: "scale(1.03)",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                    cursor: "pointer",
+                  },
                 }}
                 onClick={() => setTask("addPallet")}
               >
-                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant="h4" component="div"  sx={{ flexGrow: 1, fontWeight: "bold", textAlign: "center" }}>
                   新增棧板
                 </Typography>
                 {/* <Button sx={{ width: "100%", height: "100%" }} variant="outlined" onClick={() => setTask("find")}>

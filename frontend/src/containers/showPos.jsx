@@ -22,10 +22,10 @@ export default function ShowPos(props) {
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      center: [121.54446, 25.01793],
-      zoom: 19.5,
+      center: [121.4517645906397, 25.17598745432116],
+      zoom: 20,
       // scrollZoom: false,
-      bearing: -42, // rotate angle
+      bearing: 20, // rotate angle
       // maxBounds: [
       //   [121.544025, 25.017521],
       //   [121.544682, 25.01815],
@@ -59,7 +59,8 @@ export default function ShowPos(props) {
         type: "fill",
         source: "combinedSource",
         layout: {},
-        filter: ["in", ["get", "title"], "MD building||Classroom"],
+        filter: ["in", ["get", "title"], "Engineering Building||Classroom"],
+
         paint: {
           "fill-color": "#ffffff",
           "fill-opacity": 1,
@@ -72,12 +73,14 @@ export default function ShowPos(props) {
         type: "line",
         source: "combinedSource",
         layout: {},
-        filter: ["in", ["get", "title"], "MD building||Classroom||Blocked"],
+        filter: ["in", ["get", "title"], "Engineering Building||Classroom||Blocked"],
         paint: {
           "line-color": "#000",
           "line-width": 3,
         },
       });
+
+
       mapRef.current.addLayer({
         id: "blocked",
         type: "fill",
@@ -101,6 +104,7 @@ export default function ShowPos(props) {
         },
       });
     });
+    
 
     return () => {
       console.log(mapRef.current);

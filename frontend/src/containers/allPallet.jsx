@@ -31,10 +31,10 @@ export default function AllPallet(props) {
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      center: [121.54446, 25.01793],
-      zoom: 19.5,
+      center: [121.45145988042077, 25.17598786683712],
+      zoom: 20,
       // scrollZoom: false,
-      bearing: -42, // rotate angle
+      bearing: 10, // rotate angle
       // maxBounds: [
       //   [121.544025, 25.017521],
       //   [121.544682, 25.01815],
@@ -58,7 +58,7 @@ export default function AllPallet(props) {
         type: "fill",
         source: "combinedSource",
         layout: {},
-        filter: ["in", ["get", "title"], "MD building||Classroom"],
+        filter: ["in", ["get", "title"], "Engineering Building||Classroom"],
         paint: {
           "fill-color": "#ffffff",
           "fill-opacity": 1,
@@ -71,7 +71,7 @@ export default function AllPallet(props) {
         type: "line",
         source: "combinedSource",
         layout: {},
-        filter: ["in", ["get", "title"], "MD building||Classroom||Blocked"],
+        filter: ["in", ["get", "title"], "Engineering Building||Classroom"],
         paint: {
           "line-color": "#000",
           "line-width": 3,

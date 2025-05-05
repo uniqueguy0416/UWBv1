@@ -10,9 +10,9 @@ anchor_IDs = ['0241000000000000', '0341000000000000', '0541000000000000']
 BAUD_RATES = 57600
 
 # anchor position
-x0,  y0 = 25.017968, 121.5446405  # CRS coordinate of anchor 6
-x02, y02 = 25.017863, 121.544518   # CRS coordinate of anchor 7
-x03, y03 = 25.017988, 121.544395    # CRS coordinate of anchor 9
+x0,  y0 = 25.17597860, 121.4515157  # CRS coordinate of anchor 6
+x02, y02 = 25.17597860, 121.45159396   # CRS coordinate of anchor 7
+x03, y03 = 25.17605788, 121.4515157    # CRS coordinate of anchor 9
 # x_multiplier = 111000               # unit:(m/longitude)
 # y_multiplier = 100000               # unit:(m/latitude)
 _x_multiplier = 50000              # unit:(m/longitude)
@@ -164,7 +164,7 @@ if __name__ == '__main__':
             print("anchor ID 6: " + str(dis_to_tag[0]), end="\t")
             print("anchor ID 7: " + str(dis_to_tag[1]), end="\t")
             print("anchor ID 9: " + str(dis_to_tag[2]))
-            x, y = uwbpos.UWB_compute()
+            x, y = uwbpos.compute_CRS()  
             print("(x, y) = ({}, {})".format(x, y))
 
     except KeyboardInterrupt:
