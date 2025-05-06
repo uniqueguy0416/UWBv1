@@ -54,10 +54,10 @@ export default function PalletMap(props) {
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      center: [121.45145988042077, 25.17598786683712],
+      center: [121.4517645906397, 25.17598745432116],
       zoom: 20,
       // scrollZoom: false,
-      bearing: -42, // rotate angle
+      bearing: 20, // rotate angle
       // maxBounds: [
       //   [121.544025, 25.017521],
       //   [121.544682, 25.01815],
@@ -88,7 +88,8 @@ export default function PalletMap(props) {
         type: "fill",
         source: "combinedSource",
         layout: {},
-        filter: ["in", ["get", "title"], "Engineering Building", "Blocked"],
+        filter: ["in", ["get", "title"], "Engineering Building||Classroom"],
+
         paint: {
           "fill-color": "#ffffff",
           "fill-opacity": 1,
@@ -101,7 +102,7 @@ export default function PalletMap(props) {
         type: "line",
         source: "combinedSource",
         layout: {},
-        filter: ["in", ["get", "title"], "Classroom", "Engineering Building", "Blocked"],
+        filter: ["in", ["get", "title"], "Engineering Building||Classroom||Blocked"],
         paint: {
           "line-color": "#000",
           "line-width": 3,
