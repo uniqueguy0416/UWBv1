@@ -68,7 +68,7 @@ conn = SMBConnection(
     WINDOWS_CLIENT, WINDOWS_SERVER,
     use_ntlm_v2=True
 )
-if not conn.connect(WINDOWS_IP, 139):
+if not conn.connect(WINDOWS_IP, 445):
     raise RuntimeError("❌ 無法連線到 Windows，共用上傳失敗，請檢查 IP/帳密/防火牆設定")
 
 # 上傳檔案
