@@ -8,7 +8,7 @@ from openpyxl import load_workbook
 from pandas import ExcelWriter
 
 # ── 測量參數設定 ──
-actual_distance_cm = 600
+actual_distance_cm = 500
 measure_times      = 20
 
 # ── 初始化 ──
