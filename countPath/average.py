@@ -43,12 +43,14 @@ print(f" 平均距離：{mean:.2f} cm")
 print(f" 誤差：{error:.2f} cm")
 print(f" 標準差：{std:.2f} cm\n")
 
-output_dir = os.path.expanduser("~/uwb_results")
-os.makedirs(output_dir, exist_ok=True)  # 若資料夾不存在，則建立
+
 
 # ── 匯出成本地 Excel（含統計資料） ──
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-local_filename = f"UWB測距結果_{timestamp}.xlsx"
+output_dir = "/home/e520/uwb_results"
+os.makedirs(output_dir, exist_ok=True)  # 若資料夾不存在則建立
+local_filename = os.path.join(output_dir, f"UWB測距結果_{timestamp}.xlsx")
+
 
 # 建立測距資料表格
 df_measure = pd.DataFrame({
