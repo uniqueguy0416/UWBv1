@@ -13,7 +13,7 @@ os.makedirs(output_dir, exist_ok=True)
 ser = serial.Serial(serial_port, baud_rate, timeout=1)
 print(f"📡 開始從 {serial_port} 讀取 CIR 資料...")
 
-anchor_id = ""
+anchor_id = "0241000000000000"
 cir_data = []
 
 # ── 讀取資料 ──
