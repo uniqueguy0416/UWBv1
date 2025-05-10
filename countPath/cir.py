@@ -5,7 +5,7 @@ from datetime import datetime
 
 # ── 設定 ──
 serial_port = '/dev/ttyUSB0'
-baud_rate = 115200
+baud_rate = 57600
 output_dir = "/home/e520/UWBv1/countPath/output"
 os.makedirs(output_dir, exist_ok=True)
 
