@@ -5,20 +5,26 @@ from datetime import datetime
 
 # ── 設定 ──
 serial_port = '/dev/ttyUSB0'
-baud_rate = 57600
-output_dir = "/home/e520/UWB_results"
+baud_rate = 115200
+output_dir = "/home/e520/UWBv1/countPath/output"
 os.makedirs(output_dir, exist_ok=True)
 
-# ── 初始化 ──
+# ── 初始化 Serial ──
 ser = serial.Serial(serial_port, baud_rate, timeout=1)
 print(f"📡 開始從 {serial_port} 讀取 CIR 資料...")
 
-anchor_id = "0241000000000000"
+anchor_id = ""
 cir_data = []
 
 # ── 讀取資料 ──
 while True:
-    line = ser.readline().decode().strip()
+    try:
+        raw = ser.readline()
+        line = raw.decode(errors='ignore').strip()
+    except Exception as e:
+        print(f"⚠️ 解碼錯誤：{e}")
+        continue
+
     if line.startswith("ANCHOR_ID"):
         anchor_id = line.split(":")[1]
         cir_data = []
