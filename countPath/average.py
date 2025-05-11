@@ -11,7 +11,7 @@ actual_distance_cm = 400               # 預設測試距離
 measure_times = 5                     # 每輪測量次數
 total_rounds = 100                     # 總共執行 100 輪
 output_dir = "/home/e520/uwb_results"  # 儲存路徑
-excel_path = os.path.join(output_dir, "UWB測距記錄總表.xlsx")
+excel_path = os.path.join(output_dir, "UWB測距記錄無遮蔽.xlsx")
 
 # ── 建立儲存資料夾 ──
 os.makedirs(output_dir, exist_ok=True)
