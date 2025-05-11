@@ -64,7 +64,7 @@ for round_num in range(1, total_rounds + 1):
 
     new_df.to_excel(excel_path, index=False)
     print(f"✅ 結果已儲存至：{excel_path}")
-    print("🔁 等待 2 秒進入下一輪測距...\n")
-    sleep(2)
+    print("🔁 等待 1 秒進入下一輪測距...\n")
+    sleep(1)
 
 print("\n✅ 已完成 100 輪測距，程式自動結束。")
