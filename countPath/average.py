@@ -7,7 +7,7 @@ from read_GIPS_distance import UWBpos
 from pandas import ExcelWriter
 
 # ── 參數設定 ──
-actual_distance_cm = 3600        # 預設測試距離
+actual_distance_cm = 4000        # 預設測試距離
 measure_times = 5                     # 每輪測量次數
 total_rounds = 100                     # 總共執行 100 輪
 output_dir = "/home/e520/uwb_results"  # 儲存路徑
