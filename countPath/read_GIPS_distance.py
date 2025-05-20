@@ -10,9 +10,9 @@ anchor_IDs = ['0241000000000000', '0341000000000000', '0541000000000000']
 BAUD_RATES = 57600
 
 # anchor position
-x0,  y0 = 25.17597860, 121.4515157  # CRS coordinate of anchor 6
-x02, y02 = 25.17597860, 121.45159396   # CRS coordinate of anchor 7
-x03, y03 = 25.17605788, 121.4515157    # CRS coordinate of anchor 9
+x0,  y0 = 25.1761218, 121.4515574  # CRS coordinate of anchor 6
+x02, y02 = 25.1759795, 121.4515049   # CRS coordinate of anchor 7
+x03, y03 = 25.1761677, 121.4514203    # CRS coordinate of anchor 9
 # x_multiplier = 111000               # unit:(m/longitude)
 # y_multiplier = 100000               # unit:(m/latitude)
 _x_multiplier = 50000              # unit:(m/longitude)
