@@ -21,7 +21,7 @@ def compute_gdop(anchors: np.ndarray, x_tag: float, y_tag: float) -> float:
 def generate_gdop_heatmap(anchors: np.ndarray,
                           margin: float = 1.0,
                           step: float = 0.5,
-                          output_file: str = 'gdop_heatmap.png'):
+                          output_file: str = 'gdop_heatmap1.png'):
     """
     Generates and saves a GDOP heatmap over a grid covering the anchor area.
     anchors: (3,2) array of anchor relative positions (meters).
