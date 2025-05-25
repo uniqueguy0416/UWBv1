@@ -1,22 +1,46 @@
-import serial, binascii, time
+import serial, binascii, time, numpy as np
 
+anchor_IDs = ['0241000000000000']  # 或四顆 ID 都放進來
 COM_PORT  = '/dev/ttyUSB0'
 BAUD_RATE = 57600
 
-ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
-time.sleep(1)  # 等模組啟動
+def debug_read(ser):
+    data = ser.read(128)             # 先取 128 bytes
+    if not data:
+        return None, None
 
-try:
-    while True:
-        # 改成每次讀 128 bytes，並拿掉 flushInput()
-        data = ser.read(128)
-        if not data:
-            continue
+    hexstr = binascii.hexlify(data).decode()
+    dist_list = []
 
-        hexstr = binascii.hexlify(data).decode()
-        print(hexstr)         # 印出整串 hex
-        print('-'*60)         # 分隔線
-        time.sleep(0.5)
+    for aid in anchor_IDs:
+        idx = hexstr.find(aid)
+        if idx >= 0:
+            # 假設你目前試 offset=18~26
+            start = idx + 18
+            end   = start + 8
+            hex_d = hexstr[start:end][::-1]
+            raw_d = int(hex_d, 16)
+            dist = (raw_d if raw_d < 32768 else 0) / 100.0
+        else:
+            dist = None
+        dist_list.append(dist)
 
-except KeyboardInterrupt:
-    ser.close()
+    return hexstr, dist_list
+
+if __name__ == "__main__":
+    ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
+    time.sleep(1)
+    try:
+        while True:
+            hexstr, dists = debug_read(ser)
+            if hexstr is None:
+                continue
+
+            print("="*60)
+            print("RAW HEX: ")
+            print(hexstr)
+            print("解析後距離: ", dists)
+            time.sleep(0.5)
+
+    except KeyboardInterrupt:
+        ser.close()
