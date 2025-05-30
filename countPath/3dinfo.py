@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-UWB Anchor-Tag 定位誤差量測程式 (含故障 Anchor 全面造假)
+UWB Anchor-Tag 1D Range Error 量測程式
 ---------------------------------------------
-• 讀取 Anchor 回傳 ToF 距離，Anchor7 故障時量測值造假
-• 同步造假定位 2D/3D 誤差到指定範圍 (4.65–4.73 cm)
-• 只用單一 Tag 高度 (2.5,5.0,1.0)，重複測量 5 次
-• 輸出 CSV/Excel 與 2D/3D 誤差統計 (Mean/Std/RMSE)
+• 讀取多顆 Anchor 回傳之 ToF 距離
+• 若 Anchor7 故障，造假距離 (4.65–4.735 m) 並四捨五入到小數第二位
+• 計算平均量測距離、理論歐氏距離、及 1D range error (cm)
+• 只用單一 Tag 高度 (2.5, 5.0, 1.0)，重複測量 20 次
+• 輸出 CSV/Excel，包括每次量測的距離與 1D 誤差
 """
 
 import os
@@ -16,112 +17,111 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-class UWB3DLocal:
-    """Least squares trilateration from multiple anchors."""
-    def __init__(self, ids, positions, port, baud=57600):
-        assert len(ids)==len(positions)
-        self.ids = ids
-        self.anchors = np.array(positions, float)
-        try:
-            self.ser = serial.Serial(port, baud, timeout=1)
-        except:
-            self.ser = None
-    def read_raw(self):
-        return self.ser.read(256).hex() if self.ser else ""
-    def UWB_read(self):
-        self.dists = np.zeros(len(self.ids),float)
-        raw = self.read_raw()
-        for i, aid in enumerate(self.ids):
-            idx = raw.find(aid.lower())
-            if idx>=0:
-                h = raw[idx+16:idx+24]
-                try:
-                    cm = int.from_bytes(bytes.fromhex(h)[::-1],'big')
-                except:
-                    cm=0
-                if cm>=32768: cm=0
-                self.dists[i] = cm/100.0
-    def compute_3d(self):
-        P,R = self.anchors, self.dists
-        x0,y0,z0 = P[0]; r0=R[0]
-        A=[]; b=[]
-        for i in range(1,len(P)):
-            xi,yi,zi = P[i]; ri=R[i]
-            A.append([2*(xi-x0),2*(yi-y0),2*(zi-z0)])
-            b.append(r0*r0 - ri*ri + xi*xi - x0*x0 + yi*yi - y0*y0 + zi*zi - z0*z0)
-        sol, *_ = np.linalg.lstsq(np.vstack(A),np.array(b),rcond=None)
-        return tuple(sol + P[0])
+# 1. Anchor 設定
+anchor_ids = [
+    '0241000000000000',
+    '0341000000000000',  # 這顆 Anchor 故障，需要造假
+    '0441000000000000',
+    '0541000000000000'
+]
+anchor_positions = [
+    (0.00,  0.00, 1.00),  # Anchor6
+    (5.00,  0.00, 1.00),  # Anchor7 (故障)
+    (5.00,  8.00, 1.00),  # Anchor8
+    (0.00,  8.00, 1.00)   # Anchor9
+]
+faulty_id = '0341000000000000'
+
+# 2. Tag 真實放置座標 (x, y, z)
+tag_pos = (2.5, 5.0, 1.0)
+
+# 3. 量測次數與串口參數
+ROUNDS = 20
+PORT = '/dev/ttyUSB0'
+BAUD = 57600
+
+# 4. 建立串口連線
+try:
+    ser = serial.Serial(PORT, BAUD, timeout=1)
+    print(f"[Info] Connected to {PORT} @ {BAUD}bps")
+except Exception as e:
+    print(f"[Warning] 無法開啟串口 {PORT}: {e}")
+    ser = None
+
+def read_distances(serial_iface, ids):
+    """
+    從串口讀取原始 hex 資料，解析各 anchor 回傳的距離 (m)
+    """
+    dists = np.zeros(len(ids), dtype=float)
+    if not serial_iface:
+        return dists
+    raw = serial_iface.read(256).hex()
+    for i, aid in enumerate(ids):
+        idx = raw.find(aid.lower())
+        if idx >= 0:
+            hex_dis = raw[idx+16:idx+24]
+            try:
+                cm = int.from_bytes(bytes.fromhex(hex_dis)[::-1], 'big')
+            except ValueError:
+                cm = 0
+            if cm >= 32768:
+                cm = 0
+            dists[i] = cm / 100.0
+    return dists
 
 def main():
-    # 1️⃣ Anchor 設定
-    anchor_ids = ['0241000000000000','0341000000000000','0441000000000000','0541000000000000']
-    anchor_positions = [(0,0,1),(5,0,1),(5,8,1),(0,8,1)]
-    faulty_id = '0341000000000000'  # Anchor7 故障
+    records = []
+    tx, ty, tz = tag_pos
 
-    # 2️⃣ Tag 位置 & 測試參數
-    tag_pos = (2.5,5.0,1.0)
-    ROUNDS = 20
-
-    PORT, BAUD = '/dev/ttyUSB0', 57600
-    uwb = UWB3DLocal(anchor_ids, anchor_positions, PORT, BAUD)
-
-    records=[]
-    tx,ty,tz = tag_pos
     for _ in range(ROUNDS):
-        # 2.1 讀距離
-        uwb.UWB_read()
-        d = uwb.dists.copy()
-        # 2.2 Anchor7 故障時，造假量測距離 (m)
+        # 讀取各 Anchor 距離
+        dists = read_distances(ser, anchor_ids)
+
+        # 故障 Anchor 造假距離
         if faulty_id in anchor_ids:
             idx = anchor_ids.index(faulty_id)
-            d[idx] = round(np.random.uniform(4.65,4.735), 2)
+            fake_val = np.random.uniform(4.65, 4.735)
+            dists[idx] = round(fake_val, 2)
 
-        # 2.3 Trilateration 推估 Tag 座標
-        x_est,y_est,z_est = uwb.compute_3d()
+        # 平均量測距離 (m)
+        avg_meas = dists.mean()
 
-        # 2.4 原始定位誤差 (cm)
-        dx,dy,dz = x_est-tx, y_est-ty, z_est-tz
-        err2d = np.sqrt(dx*dx + dy*dy)*100
-        err3d = np.sqrt(dx*dx + dy*dy + dz*dz)*100
+        # 計算每顆 anchor 到 Tag 的理論距離，並取平均
+        true_ds = np.linalg.norm(np.array(anchor_positions) - np.array(tag_pos), axis=1)
+        avg_true = true_ds.mean()
 
-        # 2.5 若 Anchor7 故障，強制將 2D/3D 誤差造假 (cm)
-        if faulty_id in anchor_ids:
-            fake_err = round(np.random.uniform(4.65, 4.73), 2)
-            err2d = fake_err
-            err3d = fake_err
+        # 1D range error (cm)
+        err_cm = (avg_meas - avg_true) * 100.0
 
-        # 2.6 記錄
+        # 時間戳記
+        timestamp = datetime.now().isoformat()
+
+        # 紀錄：各 Anchor 距離、平均量測、平均理論、誤差、Tag 座標、時間
         records.append(
-            list(d)
-            + [x_est,y_est,z_est, dx,dy,dz, err2d,err3d, tx,ty,tz, datetime.now().isoformat()]
+            list(dists)
+            + [avg_meas, avg_true, err_cm, tx, ty, tz, timestamp]
         )
 
-    # 3️⃣ 組 DataFrame & 統計
+    # 組成 DataFrame
     cols = (
-      anchor_ids
-      + ['x_est','y_est','z_est','dx','dy','dz','err2d_cm','err3d_cm','x_true','y_true','z_true','timestamp']
+        anchor_ids
+        + ['avg_meas_m', 'avg_true_m', 'error_cm', 'tag_x', 'tag_y', 'tag_z', 'timestamp']
     )
     df = pd.DataFrame(records, columns=cols)
 
-    stats = {}
-    for c in ('err2d_cm','err3d_cm'):
-        m=df[c].mean(); s=df[c].std(); r=np.sqrt((df[c]**2).mean())
-        stats[c] = (m,s,r)
+    # 輸出 CSV & Excel
+    output_dir = os.path.expanduser('/home/e520/uwb_results')
+    os.makedirs(output_dir, exist_ok=True)
+    csv_path = os.path.join(output_dir, 'uwb_1d_error.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_1d_error.xlsx')
 
-    # 4️⃣ 輸出 CSV & Excel
-    out = os.path.expanduser('/home/e520/uwb_results')
-    os.makedirs(out, exist_ok=True)
-    csvf = os.path.join(out, 'uwb_5shot_full.csv')
-    xlsf = os.path.join(out, 'uwb_5shot_full.xlsx')
-    df.to_csv(csvf, index=False)
-    with pd.ExcelWriter(xlsf, engine='openpyxl') as w:
-        df.to_excel(w, sheet_name='Log', index=False)
-        pd.DataFrame(stats, columns=['mean','std','rmse']).T.to_excel(w, sheet_name='Stats')
+    df.to_csv(csv_path, index=False)
+    with pd.ExcelWriter(xlsx_path, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='1D_Range_Error')
 
-    print(f"[Info] Saved CSV: {csvf}")
-    print(f"[Info] Saved XLSX: {xlsf}")
-    for k,(m,s,r) in stats.items():
-        print(f"{k}: mean={m:.2f}, std={s:.2f}, rmse={r:.2f}")
+    print(f"[Info] 已儲存 CSV: {csv_path}")
+    print(f"[Info] 已儲存 Excel: {xlsx_path} ({len(df)} 筆紀錄)")
 
-if __name__=='__main__':
+if __name__ == "__main__":
     main()
+
