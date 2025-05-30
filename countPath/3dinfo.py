@@ -33,7 +33,7 @@ anchor_positions = [
 faulty_id = '0341000000000000'
 
 # 2. Tag 真實放置座標 (x, y, z)
-tag_pos = (2.5, 5.0, 1.5)
+tag_pos = (2.5, 5.0, 2.0)
 
 # 3. 量測次數與串口參數
 ROUNDS = 20

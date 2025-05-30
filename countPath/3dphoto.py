@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 # 1. 讀取資料
-csv_path = r'C:\RpiUploads\uwb_1m.csv'
+csv_path = r'C:\RpiUploads\uwb_2m.csv'
 df = pd.read_csv(csv_path)
 
 # 2. 定義 Anchor 座標
