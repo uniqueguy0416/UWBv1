@@ -63,7 +63,7 @@ def main():
     anchor_positions = [(0,0,1),(5,0,1),(5,8,1),(0,8,1)]
     faulty_id = '0341000000000000'
 
-    tag_positions = [(2.5,5.0,1.0]
+    tag_positions = [(2.5,5.0,1.0)]
     PORT, BAUD = '/dev/ttyUSB0', 57600
     ROUNDS = 20
 
