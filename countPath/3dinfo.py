@@ -86,7 +86,7 @@ def main():
             if faulty_id in anchor_ids:
                 idx = anchor_ids.index(faulty_id)
                 dists[idx] = np.random.uniform(4.65, 4.73)
-
+                dists[idx] = round(fake_val, 2)
             # 6.3 計算平均量測距離
             avg_meas = dists.mean()
 
