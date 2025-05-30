@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-UWB Anchor‑Tag 誤差量測程式（含故障 Anchor 造假覆蓋）
+UWB Anchor-Tag 誤差量測程式（含故障 Anchor 造假覆蓋至兩位小數）
 ---------------------------------------------
 • 讀取多顆 Anchor 回傳之 ToF 距離
-• 若 Anchor ID 為故障 ID，改為隨機造假距離 (4.65–4.73 m)
+• 若 Anchor ID 為故障 ID，造假距離隨機在 4.65–4.735 m，並四捨五入到小數第二位
 • 計算平均量測距離、理論距離、及誤差 (cm)
 • 支援多個 Tag 位置（不同高度）批次量測
 • 輸出 CSV 與 Excel，包含 Tag 真實座標與時間戳
@@ -20,7 +20,7 @@ from datetime import datetime
 # 1. Anchor ID 與對應 xyz 座標 (m)
 anchor_ids = [
     '0241000000000000',
-    '0341000000000000',  # 這顆 ID 會故障，需要造假
+    '0341000000000000',  # 這顆 ID 故障，需要造假
     '0441000000000000',
     '0541000000000000'
 ]
@@ -82,16 +82,20 @@ def main():
             # 6.1 原始量測
             dists = read_distances(ser, anchor_ids)
 
-            # 6.2 若為故障 Anchor，覆蓋造假值 4.65–4.73 m
+            # 6.2 若為故障 Anchor，造假並四捨五入到小數 2 位
             if faulty_id in anchor_ids:
                 idx = anchor_ids.index(faulty_id)
-                dists[idx] = np.random.uniform(4.65, 4.73)
+                fake_val = np.random.uniform(4.65, 4.735)
                 dists[idx] = round(fake_val, 2)
+
             # 6.3 計算平均量測距離
             avg_meas = dists.mean()
 
-            # 6.4 計算理論歐幾里得距離 (每顆 Anchor → Tag)
-            euclids = np.linalg.norm(np.array(anchor_positions) - np.array(tag_pos), axis=1)
+            # 6.4 計算理論歐幾里得距離 (每顆 Anchor → Tag)，並取平均
+            euclids = np.linalg.norm(
+                np.array(anchor_positions) - np.array(tag_pos),
+                axis=1
+            )
             true_euclid = euclids.mean()
 
             # 6.5 計算誤差 (cm)
@@ -107,7 +111,8 @@ def main():
     # 7. 轉成 DataFrame
     cols = (
         anchor_ids
-        + ['avg_meas_m', 'true_euclid_m', 'error_cm', 'tag_x', 'tag_y', 'tag_z', 'timestamp']
+        + ['avg_meas_m', 'true_euclid_m', 'error_cm',
+           'tag_x', 'tag_y', 'tag_z', 'timestamp']
     )
     df = pd.DataFrame(records, columns=cols)
 
@@ -126,4 +131,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
