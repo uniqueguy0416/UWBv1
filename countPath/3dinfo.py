@@ -112,8 +112,8 @@ def main():
     # 輸出 CSV & Excel
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_1d_error.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_1d_error.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_1m.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_1m.xlsx')
 
     df.to_csv(csv_path, index=False)
     with pd.ExcelWriter(xlsx_path, engine='openpyxl') as writer:
