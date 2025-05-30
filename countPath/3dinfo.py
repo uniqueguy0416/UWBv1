@@ -33,7 +33,7 @@ anchor_positions = [
 faulty_id = '0341000000000000'
 
 # 2. Tag 真實放置座標 (x, y, z)
-tag_pos = (2.5, 5.0, 1.0)
+tag_pos = (2.5, 5.0, 1.5)
 
 # 3. 量測次數與串口參數
 ROUNDS = 20
@@ -112,8 +112,8 @@ def main():
     # 輸出 CSV & Excel
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_1m.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_1m.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_1.5m.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_1.5m.xlsx')
 
     df.to_csv(csv_path, index=False)
     with pd.ExcelWriter(xlsx_path, engine='openpyxl') as writer:
