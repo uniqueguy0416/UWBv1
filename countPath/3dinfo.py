@@ -104,7 +104,7 @@ def main():
     df = pd.DataFrame(records, columns=cols)
 
     # 8. 輸出資料夾與檔名設定
-    output_dir = os.path.expanduser("~/uwb_results")
+    output_dir = os.path.expanduser("/home/e520/uwb_results")
     os.makedirs(output_dir, exist_ok=True)
     csv_path = os.path.join(output_dir, "uwb_error_log.csv")
     xlsx_path = os.path.join(output_dir, "uwb_error_log.xlsx")
