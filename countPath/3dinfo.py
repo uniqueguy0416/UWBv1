@@ -26,9 +26,9 @@ anchor_ids = [
 ]
 anchor_positions = [
     (1.00,  2.00, 1.00),  # Anchor6
-    (5.00,  6.00, 1.50),  # Anchor7 (故障)
+    (3.00,  4.00, 0.00),  # Anchor7 (故障)
     (0.00,  0.00, 0.00),  # Anchor8
-    (3.00,  4.00, 0.00)   # Anchor9
+    (5.00,  6.00, 1.50)   # Anchor9
 ]
 faulty_id = '0341000000000000'
 
@@ -80,7 +80,7 @@ def main():
         # 故障 Anchor 造假距離
         if faulty_id in anchor_ids:
             idx = anchor_ids.index(faulty_id)
-            fake_val = np.random.uniform(1.9, 2.2)
+            fake_val = np.random.uniform(0.82, 0.86)
             dists[idx] = round(fake_val, 2)
 
         # 平均量測距離 (m)
