@@ -28,7 +28,7 @@ anchor_positions = [
     (0.00,  0.00, 0.00),  # Anchor6
     (5.00,  0.00, 0.00),  # Anchor7 (故障)
     (5.00,  8.00, 2.00),  # Anchor8
-    (0.00,  8.00, 2.00)   # Anchor9
+    (2.00,  4.00, 2.00)   # Anchor9
 ]
 faulty_id = '0341000000000000'
 
@@ -112,8 +112,8 @@ def main():
     # 輸出 CSV & Excel
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_全域最大.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_全域最大.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_三角形內點.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_三角形內點.xlsx')
 
     df.to_csv(csv_path, index=False)
     with pd.ExcelWriter(xlsx_path, engine='openpyxl') as writer:
