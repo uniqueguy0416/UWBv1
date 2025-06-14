@@ -152,8 +152,8 @@ def main():
     # 輸出目錄與檔案路徑
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_偏側分布_含估計座標.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_偏側分布_含估計座標.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_三角內點_含估計座標.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_三角內點_含估計座標.xlsx')
 
     # 儲存 CSV & Excel
     df.to_csv(csv_path, index=False)
