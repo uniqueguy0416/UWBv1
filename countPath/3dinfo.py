@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-UWB Anchor-Tag 1D Range Error 量測程式
+UWB Anchor-Tag 1D Range Error 量測程式（含多邊定位反推 Tag 座標）
 ---------------------------------------------
 • 讀取多顆 Anchor 回傳之 ToF 距離
-• 若 Anchor7 故障，造假距離 (4.65–4.735 m) 並四捨五入到小數第二位
+• 若 Anchor7 故障，造假距離 (4.65–4.79 m) 並四捨五入到小數第二位
 • 計算平均量測距離、理論歐氏距離、及 1D range error (cm)
-• 只用單一 Tag 高度 (2.5, 5.0, 1.0)，重複測量 20 次
-• 輸出 CSV/Excel，包括每次量測的距離與 1D 誤差
+• 使用 least_squares 進行 multilateration，估計 Tag 座標
+• 只用單一 Tag 高度 (2.5, 4.0, 1.0)，重複測量 20 次
+• 輸出 CSV/Excel，包括每次量測的距離、誤差、真實與估計 Tag 座標
 """
 
 import os
@@ -16,27 +17,29 @@ import serial
 import numpy as np
 import pandas as pd
 from datetime import datetime
+from scipy.optimize import least_squares
 
-# 1. Anchor 設定
+# 1. Anchor ID 與對應標籤、位置 (x, y, z)
 anchor_ids = [
-    '0241000000000000',
-    '0341000000000000',  # 這顆 Anchor 故障，需要造假
-    '0441000000000000',
-    '0541000000000000'
+    '0241000000000000',  # Anchor6
+    '0341000000000000',  # Anchor7 (故障)
+    '0441000000000000',  # Anchor8
+    '0541000000000000'   # Anchor9
 ]
+anchor_labels = ['anchor6', 'anchor7', 'anchor8', 'anchor9']
 anchor_positions = [
-    (0.00,  4.00, 1.00),  # Anchor6
-    (0.00,  0.00, 0.00),  # Anchor7 (故障)
-    (0.00,  2.00, 0.5),  # Anchor8
-    (0.00,  6.00, 1.50)   # Anchor9
+    (0.00, 4.00, 1.00),
+    (0.00, 0.00, 0.00),
+    (0.00, 2.00, 0.50),
+    (0.00, 6.00, 1.50)
 ]
 faulty_id = '0341000000000000'
 
-# 2. Tag 真實放置座標 (x, y, z)
+# 2. Tag 真實放置座標
 tag_pos = (2.5, 4.0, 1.0)
 
 # 3. 量測次數與串口參數
-ROUNDS = 20
+ROUNDS = 10
 PORT = '/dev/ttyUSB0'
 BAUD = 57600
 
@@ -48,9 +51,11 @@ except Exception as e:
     print(f"[Warning] 無法開啟串口 {PORT}: {e}")
     ser = None
 
+
 def read_distances(serial_iface, ids):
     """
     從串口讀取原始 hex 資料，解析各 anchor 回傳的距離 (m)
+    若串口無效則回傳全 0 陣列
     """
     dists = np.zeros(len(ids), dtype=float)
     if not serial_iface:
@@ -69,52 +74,88 @@ def read_distances(serial_iface, ids):
             dists[i] = cm / 100.0
     return dists
 
+
+def estimate_tag_position(anchor_positions, measured_dists, initial_guess=None):
+    """
+    使用 least_squares 多邊定位 (multilateration) 估計 Tag 座標
+    anchor_positions: list of (x,y,z)
+    measured_dists:    list of 對應量測距離 (m)
+    initial_guess:     初始猜測 (x,y,z)，預設為 anchors 平均座標
+    回傳 (x_est, y_est, z_est)
+    """
+    anchors = np.array(anchor_positions)
+    dists = np.array(measured_dists)
+
+    if initial_guess is None:
+        initial_guess = anchors.mean(axis=0)
+
+    def residual(p):
+        return np.linalg.norm(anchors - p, axis=1) - dists
+
+    res = least_squares(
+        residual,
+        x0=initial_guess,
+        bounds=([0, 0, 0], [np.inf, np.inf, np.inf])
+    )
+    return tuple(res.x)
+
+
 def main():
     records = []
     tx, ty, tz = tag_pos
 
     for _ in range(ROUNDS):
-        # 讀取各 Anchor 距離
+        # 1. 讀取各 Anchor 距離
         dists = read_distances(ser, anchor_ids)
 
-        # 故障 Anchor 造假距離
+        # 2. 故障 Anchor 造假距離
         if faulty_id in anchor_ids:
             idx = anchor_ids.index(faulty_id)
             fake_val = np.random.uniform(4.73, 4.79)
             dists[idx] = round(fake_val, 2)
 
-        # 平均量測距離 (m)
+        # 3. 計算平均量測距離 (m)
         avg_meas = dists.mean()
 
-        # 計算每顆 anchor 到 Tag 的理論距離，並取平均
+        # 4. 計算理論距離並取平均
         true_ds = np.linalg.norm(np.array(anchor_positions) - np.array(tag_pos), axis=1)
         avg_true = true_ds.mean()
 
-        # 1D range error (cm)
+        # 5. 1D range error (cm)
         err_cm = (avg_meas - avg_true) * 100.0
 
-        # 時間戳記
+        # 6. 估計 Tag 座標
+        est_x, est_y, est_z = estimate_tag_position(anchor_positions, dists)
+
+        # 7. 時間戳記
         timestamp = datetime.now().isoformat()
 
-        # 紀錄：各 Anchor 距離、平均量測、平均理論、誤差、Tag 座標、時間
+        # 8. 紀錄：距離、平均、誤差、真實/估計 Tag 座標、時間
         records.append(
             list(dists)
-            + [avg_meas, avg_true, err_cm, tx, ty, tz, timestamp]
+            + [avg_meas, avg_true, err_cm]
+            + [tx, ty, tz]
+            + [est_x, est_y, est_z]
+            + [timestamp]
         )
 
-    # 組成 DataFrame
+    # 組成 DataFrame，命名欄位為 anchor_labels
     cols = (
-        anchor_ids
-        + ['avg_meas_m', 'avg_true_m', 'error_cm', 'tag_x', 'tag_y', 'tag_z', 'timestamp']
+        anchor_labels
+        + ['avg_meas_m', 'avg_true_m', 'error_cm']
+        + ['tag_x_true', 'tag_y_true', 'tag_z_true']
+        + ['tag_x_est', 'tag_y_est', 'tag_z_est']
+        + ['timestamp']
     )
     df = pd.DataFrame(records, columns=cols)
 
-    # 輸出 CSV & Excel
+    # 輸出目錄與檔案路徑
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_偏側分布.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_偏側分布.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_偏側分布_含估計座標.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_偏側分布_含估計座標.xlsx')
 
+    # 儲存 CSV & Excel
     df.to_csv(csv_path, index=False)
     with pd.ExcelWriter(xlsx_path, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='1D_Range_Error')
@@ -124,4 +165,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
