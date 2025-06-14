@@ -111,7 +111,7 @@ def main():
         # 2. 故障 Anchor 造假距離
         if faulty_id in anchor_ids:
             idx = anchor_ids.index(faulty_id)
-            fake_val = np.random.uniform(4.73, 4.79)
+            fake_val = np.random.uniform(4.91, 4.97)
             dists[idx] = round(fake_val, 2)
 
         # 3. 計算平均量測距離 (m)
