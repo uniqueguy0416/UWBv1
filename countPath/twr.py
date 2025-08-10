@@ -24,8 +24,7 @@ ERROR_MAX = 4.0   # 誤差最大值（cm）
 
 # ===== 2. 輸出設定 =====
 output_dir = os.path.expanduser('/home/e520/uwb_results')
-csv_path   = os.path.join(output_dir, 'uwb_線性線性_含估計座標.csv')
-xlsx_path  = os.path.join(output_dir, 'uwb_線性_含估計座標.xlsx')
+xlsx_path  = os.path.join(output_dir, 'uwb.xlsx')
 
 # ===== 3. 生成假誤差 =====
 def gen_error_cm():
