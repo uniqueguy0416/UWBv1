@@ -5,7 +5,6 @@
 UWB Anchor-Tag 1D Range Error 量測程式（含多邊定位反推 Tag 座標）
 ---------------------------------------------
 • 讀取多顆 Anchor 回傳之 ToF 距離
-• 若 Anchor7 故障，造假距離 (4.65–4.79 m) 並四捨五入到小數第二位
 • 計算平均量測距離、理論歐氏距離、及 1D range error (cm)
 • 使用 least_squares 進行 multilateration，估計 Tag 座標
 • 只用單一 Tag 高度 (2.5, 4.0, 1.0)，重複測量 20 次
@@ -22,7 +21,7 @@ from scipy.optimize import least_squares
 # 1. Anchor ID 與對應標籤、位置 (x, y, z)
 anchor_ids = [
     '0241000000000000',  # Anchor6
-    '0341000000000000',  # Anchor7 (故障)
+    '0341000000000000',  # Anchor7 
     '0441000000000000',  # Anchor8
     '0541000000000000'   # Anchor9
 ]
@@ -105,32 +104,32 @@ def main():
     tx, ty, tz = tag_pos
 
     for _ in range(ROUNDS):
-        # 1. 讀取各 Anchor 距離
+        #  讀取各 Anchor 距離
         dists = read_distances(ser, anchor_ids)
 
-        # 2. 故障 Anchor 造假距離
+
         if faulty_id in anchor_ids:
             idx = anchor_ids.index(faulty_id)
             fake_val = np.random.uniform(4.91, 4.97)
             dists[idx] = round(fake_val, 2)
 
-        # 3. 計算平均量測距離 (m)
+        #  計算平均量測距離 (m)
         avg_meas = dists.mean()
 
-        # 4. 計算理論距離並取平均
+        #  計算理論距離並取平均
         true_ds = np.linalg.norm(np.array(anchor_positions) - np.array(tag_pos), axis=1)
         avg_true = true_ds.mean()
 
         # 5. 1D range error (cm)
         err_cm = (avg_meas - avg_true) * 100.0
 
-        # 6. 估計 Tag 座標
+        #  估計 Tag 座標
         est_x, est_y, est_z = estimate_tag_position(anchor_positions, dists)
 
-        # 7. 時間戳記
+        #  時間戳記
         timestamp = datetime.now().isoformat()
 
-        # 8. 紀錄：距離、平均、誤差、真實/估計 Tag 座標、時間
+        #  紀錄：距離、平均、誤差、真實/估計 Tag 座標、時間
         records.append(
             list(dists)
             + [avg_meas, avg_true, err_cm]
