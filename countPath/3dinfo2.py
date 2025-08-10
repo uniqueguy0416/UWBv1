@@ -120,8 +120,8 @@ def main():
     # 輸出
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_t_含估計座標.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_t_含估計座標.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_tt_含估計座標.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_tt_含估計座標.xlsx')
 
     df.to_csv(csv_path, index=False)
     with pd.ExcelWriter(xlsx_path, engine='openpyxl') as writer:
