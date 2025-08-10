@@ -27,10 +27,10 @@ anchor_ids = [
 ]
 anchor_labels = ['anchor6', 'anchor7', 'anchor8', 'anchor9']
 anchor_positions = [
-    (3.00, 0.00, 1.5),
-    (0.00, 0.00, 0.00),
-    (1.00, 0.00, 0.5),
-    (2.00, 0.00, 0.5)
+    (4.00, 0.00, 2.00),
+    (4.00, 2.00, 0.00),
+    (5.00, 8.00, 2.00),
+    (0.00, 6.00, 1.5)
 ]
 faulty_id = '0341000000000000'
 
@@ -151,8 +151,8 @@ def main():
     # 輸出目錄與檔案路徑
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_線性線性_含估計座標.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_線性_含估計座標.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_t_含估計座標.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_t_含估計座標.xlsx')
 
     # 儲存 CSV & Excel
     df.to_csv(csv_path, index=False)
