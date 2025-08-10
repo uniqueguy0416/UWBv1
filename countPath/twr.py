@@ -21,7 +21,7 @@ import pandas as pd
 
 # ===== 參數設定 =====
 anchor_id  = '0241000000000000'   # 8-byte HEX（需與資料幀一致）
-anchor_pos = (3.00, 0.00, 1.50)   # (x, y, z) in meters
+anchor_pos = (4.00, 0.00, 2.00)   # (x, y, z) in meters
 tag_pos    = (2.50, 4.00, 1.00)   # (x, y, z) in meters
 
 ROUNDS = 10
