@@ -24,7 +24,8 @@ ERROR_MAX = 4.0   # 誤差最大值（cm）
 
 # ===== 2. 輸出設定 =====
 output_dir = os.path.expanduser('/home/e520/uwb_results')
-xlsx_path  = os.path.join(output_dir, 'uwb.xlsx')
+csv_path   = os.path.join(output_dir, 'uwb_.csv')
+xlsx_path  = os.path.join(output_dir, 'uwb_.xlsx')
 
 # ===== 3. 生成假誤差 =====
 def gen_error_cm():
