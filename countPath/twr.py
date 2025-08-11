@@ -23,7 +23,6 @@ def gen_error_cm():
     sign = -1 if random.random() < 0.5 else 1
     return round(abs(sign * mag), 3)  
 
-
 def main():
     random.seed(SEED)
     os.makedirs(output_dir, exist_ok=True)
