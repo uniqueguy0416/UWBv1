@@ -21,7 +21,8 @@ xlsx_path  = os.path.join(output_dir, 'uwb_c.xlsx')
 def gen_error_cm():
     mag = random.uniform(ERROR_MIN, ERROR_MAX)
     sign = -1 if random.random() < 0.5 else 1
-    return round(sign * mag, 3)
+    return round(abs(sign * mag), 3)  
+
 
 def main():
     random.seed(SEED)
