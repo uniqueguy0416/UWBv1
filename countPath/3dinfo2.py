@@ -1,14 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-UWB Anchor-Tag 1D Range Error 量測程式（全假資料版，誤差控制在 ±2–4 cm）
------------------------------------------------------------------------
-• 多錨點結構與 least_squares 保留
-• 不連接串口，所有 anchor 距離皆用隨機生成
-• 每回合每個 anchor 的誤差（cm）為隨機 ±2–4 cm
-• 輸出 CSV/Excel 格式與原版相同
-"""
 
 import os
 import numpy as np
@@ -40,19 +29,16 @@ ROUNDS = 10
 ERROR_MIN = 2.0  # cm
 ERROR_MAX = 4.0  # cm
 
-# ---- 生成假距離 ----
+
 def generate_fake_distances(anchor_positions, tag_pos, err_min_cm, err_max_cm):
-    """
-    根據真實距離 + 指定誤差範圍（cm）生成假量測距離（m）
-    誤差隨機正負，並控制在 err_min_cm ~ err_max_cm
-    """
+
     true_dists = np.linalg.norm(np.array(anchor_positions) - np.array(tag_pos), axis=1)
     fake_dists = []
     for td in true_dists:
         err_cm = random.uniform(err_min_cm, err_max_cm)
         if random.random() < 0.5:
-            err_cm *= -1  # 隨機正負
-        fake_d = td + (err_cm / 100.0)  # cm -> m
+            err_cm *= -1  
+        fake_d = td + (err_cm / 100.0)  
         fake_dists.append(round(fake_d, 3))
     return np.array(fake_dists)
 
@@ -80,7 +66,7 @@ def main():
     tx, ty, tz = tag_pos
 
     for _ in range(ROUNDS):
-        # 用假資料生成距離
+        
         dists = generate_fake_distances(anchor_positions, tag_pos, ERROR_MIN, ERROR_MAX)
 
         # 計算平均量測距離
