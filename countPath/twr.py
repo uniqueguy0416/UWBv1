@@ -14,8 +14,8 @@ ERROR_MAX = 4.0
 
 
 output_dir = os.path.expanduser('/home/e520/uwb_results')
-csv_path   = os.path.join(output_dir, 'uwb_c.csv')
-xlsx_path  = os.path.join(output_dir, 'uwb_c.xlsx')
+csv_path   = os.path.join(output_dir, 'uwb_cc.csv')
+xlsx_path  = os.path.join(output_dir, 'uwb_cc.xlsx')
 
 
 def gen_error_cm():
