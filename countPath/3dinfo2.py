@@ -22,7 +22,7 @@ tag_pos = (2.5, 4.0, 1.0)
 
 # 3. 量測次數與目標誤差
 ROUNDS = 10
-TARGET_ERR3D_CM = 30.0  # 目標 3D 誤差（公分）
+TARGET_ERR3D_CM = 28.0  # 目標 3D 誤差（公分）
 
 random.seed(42)  # 固定種子，方便重現
 
