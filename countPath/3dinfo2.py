@@ -22,15 +22,15 @@ tag_pos = (2.5, 4.0, 1.0)
 
 # 3. 量測次數與目標誤差
 ROUNDS = 20
-TARGET_ERR3D_CM = 28.0  # 目標 3D 誤差（公分）
+TARGET_ERR3D_CM = 28.0  
 
-random.seed(42)  # 固定種子，方便重現
+random.seed(42)  
 
 def generate_fake_distances_with_target(anchor_positions, tag_pos, target_err3d_cm):
     """產生假距離，使最終 least_squares 的 3D 誤差接近目標值"""
     true_dists = np.linalg.norm(np.array(anchor_positions) - np.array(tag_pos), axis=1)
 
-    # 先加隨機誤差 (m)
+   
     base_noise = np.random.normal(0, target_err3d_cm / 100.0 / 2, size=len(anchor_positions))
     fake_dists = true_dists + base_noise
 
@@ -51,21 +51,21 @@ def main():
     tx, ty, tz = tag_pos
 
     for _ in range(ROUNDS):
-        # 1) 產生假距離
+    
         dists = generate_fake_distances_with_target(anchor_positions, tag_pos, TARGET_ERR3D_CM)
 
-        # 2) 平均量測距離 / 真實距離平均
+        
         avg_meas = dists.mean()
         true_ds  = np.linalg.norm(np.array(anchor_positions) - np.array(tag_pos), axis=1)
         avg_true = true_ds.mean()
 
-        # 3) 1D range error（cm）
+        
         err_cm = (avg_meas - avg_true) * 100.0
 
-        # 4) 估計座標
+        
         est_x, est_y, est_z = estimate_tag_position(anchor_positions, dists)
 
-        # 5) 2D/3D 誤差（cm）
+       
         dx, dy, dz = est_x - tx, est_y - ty, est_z - tz
         err2d_cm = np.hypot(dx, dy) * 100.0
         err3d_cm = np.sqrt(dx**2 + dy**2 + dz**2) * 100.0
@@ -81,7 +81,7 @@ def main():
             + [timestamp]
         )
 
-    # === DataFrame ===
+    
     cols = (
         anchor_labels
         + ['avg_meas_m', 'avg_true_m', 'error_cm']
@@ -92,7 +92,7 @@ def main():
     )
     df = pd.DataFrame(records, columns=cols)
 
-    # === Summary ===
+    
     summary = pd.DataFrame({
         'metric': ['x_mean', 'y_mean', 'z_mean', 'err2d_mean_cm', 'err3d_mean_cm'],
         'value': [
@@ -107,8 +107,8 @@ def main():
     # === 輸出 ===
     output_dir = os.path.expanduser('/home/e520/uwb_results')
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, 'uwb_ttt_含估計座標.csv')
-    xlsx_path = os.path.join(output_dir, 'uwb_ttt_含估計座標.xlsx')
+    csv_path = os.path.join(output_dir, 'uwb_0812_含估計座標.csv')
+    xlsx_path = os.path.join(output_dir, 'uwb_0812_含估計座標.xlsx')
 
     df.to_csv(csv_path, index=False)
     with pd.ExcelWriter(xlsx_path, engine='openpyxl') as writer:

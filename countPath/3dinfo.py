@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-UWB Anchor-Tag 1D Range Error 量測程式（含多邊定位反推 Tag 座標）
----------------------------------------------
-• 讀取多顆 Anchor 回傳之 ToF 距離
-• 計算平均量測距離、理論歐氏距離、及 1D range error (cm)
-• 使用 least_squares 進行 multilateration，估計 Tag 座標
-• 只用單一 Tag 高度 (2.5, 4.0, 1.0)，重複測量 20 次
-• 輸出 CSV/Excel，包括每次量測的距離、誤差、真實與估計 Tag 座標
-"""
+
 
 import os
 import serial
@@ -38,7 +30,7 @@ faulty_id = '0341000000000000'
 tag_pos = (2.5, 4.0, 1.0)
 
 # 3. 量測次數與串口參數
-ROUNDS = 10
+ROUNDS = 20
 PORT = '/dev/ttyUSB0'
 BAUD = 57600
 
